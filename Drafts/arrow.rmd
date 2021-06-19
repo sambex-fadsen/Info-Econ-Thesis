@@ -1,0 +1,298 @@
+---
+title: "Arrow's Impossiblity Theorem"
+author: "~sambex-fadsen"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,fig.align='center')
+```
+<style>
+body {
+    background-color: #333;
+    color: #FFFFFF;
+}
+</style>
+### Motivation
+I remember when I was a wee middle schooler and first heard about the Nader/Gore fiasco, my immediate reaction was "why the hell don't we have a ranked-order voting system!?!"
+
+Almost a decade later, now that I am studying social choice and decision theory, I finally have an answer for my middle school self: Kenneth Arrow's Impossiblity Theorem.
+
+Formally, the theorem states that _no_ rank-order voting system with more than 2 candidates can satisfy unanimity, binary independence, and non-dictatorship simultaneously.
+
+Middle school Siddharth: "What the hell do I care about unanimity? Binary independence? How could there be a dictator if it's a democracy!?"
+
+Oh silly Sidhu, let me explain...
+
+### 3 Reasonable Demands
+
+Let's start with some definitions. Given $n$ voters $\{x_1,x_2...,x_n\}$ and $m$ candidates $\{y_1,y_2...,y_m\}$, we define $\mathcal{O}$ to be the set of all $m!$ _order preferences_ over our candidates. 
+
+A _preference profile_ is an element $\theta \in \mathcal{O}^n$, where we let $\theta_i$ be the order preference of the $i$th voter. In particular, we write $\theta_i(a) \succ \theta_i(b)$ if voter $x_i$ prefers candidate $y_a$ to candidate $y_b$.
+
+Finally, a _social aggregation function_ is any function $f: \mathcal{O}^n \to \mathcal{O}$ which maps a given preference profile to a unique order preference (you can think of this as our 'voting system').
+
+Now, we are ready to describe the 3 demands we want our social aggregation function $f$ to satisfy. I will define each demand formally and then use plain English to make each one seem reasonable.
+
+First, $f$ satisfies _unanimity_ iff $\forall \theta \in \mathcal{O}^n$:
+$$(\forall i \in [n], \ \theta_i(a) \succ \theta_i(b)) \implies  f(\theta)(a) \succ f(\theta)(b)$$
+This means if each of our voters prefers $y_a$ to $y_b$, then the aggregate preference must also favor $y_a$ to $y_b$.
+
+Second, $f$ satisfies _binary independence_ iff $\forall \theta,\tau \in \mathcal{O}^n$:
+$$(\forall i \in [n], \ \theta_i(a) \succ \theta_i(b) \leftrightarrow \tau_i(a) \succ \tau_j(b)) \implies (f(\theta)(a) \succ f(\theta)(b) \leftrightarrow f(\tau)(a) \succ f(\tau)(b) )$$
+In other words, the aggregate preference between $y_a$ and $y_b$ is uniquely determined by each voter's preference between $y_a$ and $y_b$.
+
+Third, $f$ satisfies _non-dictatorship_ iff:
+$$\neg(\exists i \in [n] \ \text{s.t.} \ \forall \theta \in \mathcal{O}, \ f(\theta)=\theta_i)$$
+That is to say, there does not exist a voter whose order preference is _always_ the aggregate preference.
+
+Hopefully, these demands seem like sensible things to ask from a voting system. If they don't, maybe try convincing yourself that a simple majority rule procedure between two candidates _does_ satisfy them.
+
+Unfortunately, when there are more than $2$ candidates, turns out we're asking for too much...
+
+### Proof of the Theorem
+STAC there exists a social aggregation function $f$ satisfying unanimity, binary independence, and non-dictatorship in an election with more than 2 candidates...
+
+#### Defining Pivots
+Given two candidates $y_a$, $y_b$, we define the _pivot_ from $a$ to $b$ as follows.
+
+Consider a preference profile $\theta^0 \in \mathcal{O}^n$ where $\forall i \in [n]$:
+$$\theta^0_i(a) \succ \theta^0_i(b)$$
+By unanimity, we must have:
+$$f(\theta^0)(a) \succ f(\theta^0)(b)$$
+Now pick $\theta^{k} \in \mathcal{O}^n$ so that $\forall i \in [n]\backslash [k]$:
+$$\theta^{k}_i(a) \succ \theta^{k}_i(b)$$
+but $\forall i \in [k]$:
+$$\theta_i^{k}(a) \prec \theta_i^{k}(b) $$
+In particular, the last preference profile $\theta^n$ will have $\forall i \in [n]$:
+$$\theta^n_i(a) \prec \theta^n_i(b)$$
+Thus by unanimity, we must have:
+$$f(\theta^n)(a) \prec f(\theta^n)(b)$$
+Moreover, we are guarenteed the existence of an integer $b|a \in [n]$ satisfying:
+$$b|a=\min\{k \ | \ f(\theta^k)(a) \prec f(\theta^k)(b) \}$$
+We call the candidate $x_{b|a}$ our "pivot" from $a$ to $b$.  Note $b|a$ is _unique_ despite our particular choice of $\theta^0,\theta^1...,\theta^n$ since $f$ satisfies binary independence. 
+
+Additionally, if $\theta \in \mathcal{O}^n$ is a preference profile so that $\forall i \in [1, b|a)$:
+$$\theta_i(a) \succ \theta_i(b)$$
+and $\forall i \in (b|a,n]$:
+$$\theta_i(a) \prec \theta_i(b)$$
+then by construction:
+$$f(\theta)(b) \succ f(\theta)(a) \iff \theta_{b|a}(b) \succ \theta_{b|a}(a)$$
+
+#### The Power of Pivots
+Let's introduce a third candidate $y_c$ and suppose we have a preference profile $\tau \in \mathcal{O}^n$ so that  $\forall i \in [1, b|a]$:
+$$\tau_i(a) \succ \tau_i(b) \succ \tau_i(c) $$
+, and $\forall i \in (b|a,n]$:
+$$\tau_i(a) \prec \tau_i(c) \prec \tau_i(b)$$
+Since $b|a$ is the pivot from $a$ to $b$, we know that:
+$$f(\tau)(a) \succ f(\tau)(b)$$
+Also by unanimity:
+$$f(\tau)(b) \succ f(\tau)(c)$$
+Thus:
+$$f(\tau)(a) \succ f(\tau)(b) \succ f(\tau)(c)$$
+Now, if voter $x_{b|a}$ switches their order preference so:
+$$\tau_{b|a}(b) \succ \tau_{b|a}(a) \succ \tau_{b|a}(c) $$
+and the rest of the voters arbitrarily shuffle their preferences between $y_b$ and $y_c$, then binary independence implies we still have:
+$$f(\tau)(a) \succ f(\tau)(c)$$
+Moreover, since $b|a$ is the pivot from $a$ to $b$:
+$$f(\tau)(b) \succ f(\tau)(a)$$
+Thus:
+$$f(\tau)(b) \succ f(\tau)(a) \succ f(\tau)(c)$$
+Finally, if all the voters arbitrarily change their ranking of $y_a$, then binary independence implies we still have:
+$$f(\tau)(b)  \succ f(\tau)(c)$$
+Thus, so long as voter $x_{b|a}$ prefers candidate $y_b$ to $y_c$, this dictates $f(\tau)(b) \succ f(\tau)(c)$, _regardless of everyone else's preferences_. 
+
+In other words the pivot from $a$ to $b$ gets to force all candidates (except for $y_a$) below $y_b$ in the aggregate preference if they so chose. Interesting, n’est ce pas? 
+
+#### All Pivots are the Same
+
+Consider a preference profile $\theta \in \mathcal{O}^n$ such that $\forall i \in [1,b|a)$:
+$$\theta_i(b) \succ \theta_i(c)$$
+and $\forall i \in (b|a,n]$:
+$$\theta_i(c) \succ \theta_i(b)$$
+As we saw at the end of the last section, since $\theta_{b|a}(b) \succ \theta_{b|a}(c)$ we must have:
+$$f(\theta)(b) \succ f(\theta)(c)$$
+Thus $b|c \leq b|a$.
+
+Now consider a preference profile $\theta \in \mathcal{O}^n$ such that $\forall i \in [1,b|a)$:
+$$\theta_i(c) \succ \theta_i(b)$$
+and $\forall i \in [b|a,n]$:
+$$\theta_i(b) \succ \theta_i(c)$$
+As we saw at the end of the last section, since $\theta_{b|a}(b) \succ \theta_{b|a}(c)$ we must have:
+$$f(\theta)(b) \succ f(\theta)(c)$$
+Thus $c|b \geq b|a$. Putting this together with the previous inequality:
+$$b|c \leq b|a \leq c|b$$
+By symmetry we have:
+$$c|b \leq c|a \leq b|c$$
+Thus:
+$$b|c=c|b=a|b=b|a=c|a=a|c$$
+Since all pivots are the same, there exists a voter who gets to force each candidate below any other candidate in the aggregate preference. Thus this voter is a dictor, contradicting our assumption that $f$ is non-dictatorial!
+
+### Probabilistic Arrow's Theorem
+
+Now that we've seen the proof of Arrow's theorem proper, I want to look at a slightly tweaked version! 
+
+Instead of aggregating a group of individuals' preference orders over of set of candidates, we are now going to aggregate their _probability distributions_ over a measurable space $(\Omega, \mathcal{F})$.
+
+We require $\Omega$ contain more than 2 measurable outcomes (this is analagous to having more than $2$ candidates). Also, we will denote the set of all possible measures over $(\Omega, \mathcal{F})$ by $\mathcal{M}$. 
+
+In particular, the probability distributions of our $n$ individuals will be characterized by a _opinion pool_ $\{P_1, P_2, ...P_n\} \in \mathcal{M}^n$. 
+
+A _consensus function_ will be a function $C: \mathcal{M}^n \to \mathcal{M}$ which maps a given opinion pool to a unique probability distribution over $(\Omega, \mathcal{F})$.
+
+Once again, we have three seemingly reasonable demands:
+
+First, $C$ satisfies the _independence preservation property_ (IPP) iff :
+$$(\forall i \in [n], \ P_i(A \cap B)=P_i(A)\cdot P_i(B)) \implies C(P_1,P_2,...P_n)(A\cap B)=C(P_1,P_2,...P_n)(A)\cdot C(P_1,P_2,...P_n)(B)$$
+IPP parallels our previous notion of _unanimity_ in that if each individual thinks events $A$ and $B$ are independent, then the aggregate distribution also treats $A$ and $B$ as independent. 
+
+Second, $C$ satisfies the _strong setwise function property_ (SSFP) iff $\exists G: [0,1]^n \to [0,1]$ such that for any given opinion pool $\{P_1,P_2,...,P_n\}\in \mathcal{M}^n$:
+$$\forall A \in \mathcal{F}, \ C(P_1, P_2, ...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))$$
+SSFP is analagous to _binary independence_ since it implies the aggregate probability of a given event is uniquely determined by the probabilities each individual assigns to that event.
+
+Third, $C$ satisfies _non-dictatorship_ iff:
+$$\neg(\exists i \in [n] \ \text{s.t.} \ \forall \{P_1,P_2,...,P_n\}\in \mathcal{M}^n, \ \forall A \in \mathcal{F}, \ C(P_1,P_2,...P_n)(A)=P_i(A) )$$
+As before, we will proceed by showing IPP + SSFP necessarily violate non-dictatorship.
+
+However, we need to first establish a crucial and somewhat surprising lemma...
+
+#### SSFP $\iff$ Consensus is Linear
+
+We claim $C$ satisfies SSFP iff $\exists w_1, w_2,...w_n \in [0,1]$ such that $\sum_{i=1}^n w_i=1$ and for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$,  $\forall A \in \mathcal{F}$:
+$$C(P_1,P_2,...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))=\sum_{i=1}^n w_i \cdot P_i(A)$$
+ 
+**Proof:**
+\
+It trivially follows that linear consensus $\implies$ SSFP so we will only show the other direction.
+
+Consider three disjoint non-empty subsets $A, B, C \in \mathcal{F}$ which partition $\Omega$ (we are guarenteed these exist by the assumption $\Omega$ has more than 2 measurable outcomes).
+
+Let $(a_1,b_1),(a_2,b_2),...(a_n,b_n) \in \mathbb{R}^2_{\geq 0}$ so that $\forall i \in [n], \ a_i+b_i \leq 1$. We construct an opinion pool $\{P'_1, P'_2, ... P'_n\} \in \mathcal{M}^n$ so that:
+\begin{align*}
+&P'_i(A)=a_i
+\\
+&P'_i(B)=b_i
+\\
+&P'_i(C)=1-(a_i+b_i)
+\end{align*}
+By SSFP:
+\begin{align*}
+G(a_1+b_1,a_2+b_2,...a_n+b_n)&=G(P'_1(A)+P'_1(B),P'_2(A)+P'_2(B),...P'_n(A)+P'_n(B))
+\\
+&=G(P'_1(A\cup B),P'_2(A\cup B),...P'_n(A\cup B))
+\\
+&=C(P'_1,P'_2,...P'_n)(A \cup B)
+\\
+&=C(P'_1,P'_2,...P'_n)(A)+C(P'_1,P'_2,...P'_n)(B)
+\\
+&=G(P'_1(A),P'_2(A),...P'_n(A))+G(P'_1(B),P'_2(B),...P'_n(B))
+\\
+&=G(a_1,a_2,...a_n)+G(b_1,b_2,...b_n)
+\end{align*}
+
+In particular, this implies $\forall x=\{x_1,x_2,...x_n\}\in [0,1]^n$:
+\begin{align*}
+G(x_1,x_2,...x_n)=G(x_1,0,...0)+G(0,x_2,...x_n)=\sum_{i=1}^n G(0,...0,x_i,0,...0)
+\end{align*}
+More concisely, if we write $G_i(a)=G(\underbrace{0,...0}_{i-1\ 0's},a,0,...0)$ then:
+$$G(x)=\sum_{i=1}^n G_i(x_i)$$
+Now if $a,b \in [0,1]$ so that $a+b \in [0,1]$, then from before:
+\begin{align*}
+G_i(a+b)&=G(0,...0,a+b,0,...0)
+\\
+&=G(0,...0,a,0,...0)+G(0,...0,b,0,...0)
+\\
+&=G_i(a)+G_i(b)
+\end{align*}
+, i.e. each $G_i$ satisfies the Cauchy functional equation on the unit interval. Note $\forall n \in \mathbb{N}^+$:
+$$G_i(x)=G_i\left(\frac{n}{n}\cdot x\right)=n\cdot G_i\left(\frac{x}{n}\right)$$
+, i.e.
+$$\frac{1}{n}\cdot G_i(x)=G_i\left(\frac{x}{n}\right)$$
+Now if $m\in \mathbb{N}_{\geq 0}$ so that $\frac{m}{n} \in \mathbb{Q}_{\geq 0} \cap [0,1]$ then:
+$$G_i\left(\frac{m}{n}\cdot x\right)=m\cdot G_i\left(\frac{x}{n}\right)=\frac{m}{n}\cdot G_i(x)$$
+Finally $\forall r \in [0,1]$ can pick a rational $q_r \in [0,1]$ arbitrarily close so that $d_r=r-q_r \in [0,\frac{1}{N}]$ for any given $N \in \mathbb{N}$. Note:
+\begin{align*}
+G_i(r)-G_i(1)\cdot r&=G_i(r-q_r+q_r)-G_i(1)\cdot r
+\\
+&=G_i(r-q_r)+G_i(q_r)-G_i(1)\cdot r
+\\
+&=G_i(r-q_r)+(q_r-r)\cdot G_i(1)
+\\
+&=G_i(d_r)-d_r\cdot G_i(1)
+\end{align*}
+We know $\text{Im}(G_i)\subseteq [0,1]$ as its values must be probabilities. Thus $G_i(d_r)\leq \frac{1}{N}$ (otherwise $G_i(N \cdot d_r)=N \cdot G_i(d_r) > 1$) and $G_i(1) \leq 1$. Hence:
+$$|G_i(r)-G_i(1)\cdot r|=|G_i(d_r)-d_r\cdot G_i(1)|\leq |G_i(d_r)|+d_r\cdot|G_i(1)| \leq \frac{2}{N}$$
+Taking the limit as $N \to \infty$ yields:
+$$G_i(r)=G_i(1)\cdot r$$
+Thus $\forall i \in [n]$, $G_i$ is of the form:
+$$G_i(x)=w_i \cdot x$$
+where $w_i \in [0,1]$.
+
+Putting things together, this implies for any given opinion pool $\{P_1,P_2,...P_n\} \in \mathcal{M}^n$, $\forall A \in \mathcal{A}$:
+\begin{align*}
+C(P_1,P_2,...P_n)(A)&=G(P_1(A),P_2(A),...P_n(A))
+\\
+&=\sum_{i=1}^n G_i(P_i(A))
+\\
+&=\sum_{i=1}^n w_i \cdot P_i(A)
+\end{align*}
+
+In particular, when $A=\Omega$ we have:
+$$1=C(P_1,P_2,...P_n)(\Omega)=\sum_{i=1}^n w_i \cdot P_i(\Omega)=\sum_{i=1}^n w_i$$
+as desired. Phew! $\square$
+
+#### IPP + SSFP $\implies$ Dictatorship
+As before, consider three disjoint non-empty subsets $A, B, C \in \mathcal{F}$ which partition $\Omega$. By the above, SSFP implies $\exists w_1,w_2...w_n \in [0,1]$ summing to $1$ so that for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$:
+
+\begin{align*}
+&C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i P_i(A)
+\\
+&C(P_1,P_2,...P_n)(B)=\sum_{i=1}^n w_i P_i(B)
+\\
+&C(P_1,P_2,...P_n)(C)=\sum_{i=1}^n w_i P_i(C)
+\end{align*}
+
+Since not all $w_i$ can be zero we know $\exists k \in [n]$ so that $w_k>0$. We construct an opinion pool $\{P'_1,P'_2,...P'_n\}$ so that:
+$$\left(P'_k(A),\ P'_k(B), P'_k(C)\right)=\left(0,\frac{1}{2},\frac{1}{2} \right)$$
+and $\forall i \in [n] \backslash \{k\}$:
+$$\left(P'_i(A),\ P'_i(B), P'_i(C)\right)=\left(\frac{1}{2},\frac{1}{2},0 \right)$$
+Note:
+\begin{align*}
+&C(P'_1,P'_2,...P'_n)(A)=\frac{1-w_k}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(B)=\frac{1}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(C)=\frac{w_k}{2}
+\end{align*}
+
+Consider the events $S=A \cup B$ and $T=B \cup C$. By the above:
+\begin{align*}
+&C(P'_1,P'_2,...P'_n)(S)=\frac{1-w_k}{2}+\frac{1}{2}=1-\frac{w_k}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(T)=\frac{1}{2}+\frac{w_k}{2}
+\end{align*}
+
+Since $P'_k(S)=P'_k(A)+P'_k(B)=\frac{1}{2}$ and $P'_k(T)=P'_k(B)+P'_k(C)=1$:
+$$P'_k(S \cap T)=P'_k(B)=\frac{1}{2}=\frac{1}{2}\cdot 1=P'_k(S) \cdot P'_k(T)$$
+Additionally, since  $\forall i \in [n] \backslash \{k\}$, $P'_i(S)=P'_i(A)+P'_i(B)=1$ and $P'_i(T)=P'_i(B)+P'_i(C)=\frac{1}{2}$: 
+$$P'_i(S \cap T)=P'_i(B)=\frac{1}{2}=1\cdot \frac{1}{2}=P'_i(S) \cdot P'_i(T)$$
+Thus by IPP, we must have:
+$$C(P'_1,P'_2,...P'_n)(B)=C(P'_1,P'_2,...P'_n)(S \cap T)=C(P'_1,P'_2,...P'_n)(S) \cdot C(P'_1,P'_2,...P'_n)(T)$$
+Hence:
+$$\frac{1}{2}=\left(1-\frac{w_k}{2}\right)\cdot \left(\frac{1}{2}+\frac{w_k}{2}\right)$$
+The only solutions to the above quadratic are $w_k=0$ and $w_k=1$. However, $w_k>0$ by assumption, implying $w_k=1$ and all other $w_i=0$. This means for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$, $\forall A \in \mathcal{F}$:
+$$C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i \cdot P_i(A)=P_k(A)$$
+In other words, we have found our dictator! Thus, given more than 2 measurable outcomes, _no_ consensus function can satisfy IPP, SSFP, and non-dictatorship simultaneously :)
+
+### Conclusion
+
+Make sense now Sidhu?
+
+Middle school Siddharth: "No but I guess I believe you..."
+
+Yah, me too lol. 
+
+I would classify Arrow's Impossibility Theorem as _deeply_ counter-intuitive, but it is one of the hallmarks of social choice theory. 
+
+The essence of the theorem is that there is no 'right' way to aggregate opinions, and while that might sound dismal (bum dum tss), it also means that normative considerations are _inevitable_ when we choose how to pool together people's beliefs and tastes. 
+
+Don't get me wrong; the theorem is drop dead gorgeous. However, I suspect the Nobel Prize commitee's decision to grant Arrow his award in 1972 was not primarily motivated by the result's beauty, but rather, its damning revelation of the fundamentally human nature of economics. 
