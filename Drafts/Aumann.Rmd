@@ -1,0 +1,137 @@
+---
+title: "Agreeing to Disagree"
+author: "~sambex-fadsen"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<style>
+body {
+    background-color: #333;
+    color: #FFFFFF;
+}
+</style>
+
+## Aumann's Agreement Theorem
+
+Let $(\Omega, \mathcal{F},\mu)$ be a probability space, and let $Q^a$, $Q^b$ be partitions of $\Omega$ such that $Q^a \lor Q^b$ (the coarsest common refinement) consists of non-null events. 
+
+$(\Omega, \mathcal{F},\mu)$ is our space of states of the world.
+
+$\mu$ is a prior common to agent $a$ and agent $b$.
+
+$Q^a=\{Q^a_1,Q^a_2,...Q^a_K\}$ is the information partition of agent $a$ and $Q^b=\{Q^b_1,Q^b_2,...Q^b_L\}$ is the information partition of agent $b$.
+
+If $\omega \in \Omega$ is the true state of the world then agent $i$ is informed of $Q^i(\omega)$ which is the element of $Q^i$ that contains $\omega$.
+
+An event $E$ is common knowledge if $E$ includes that member of the meet $Q^a \land Q^b$ (the finest common coarsening) which contains $\omega$.
+
+Let $A$ be an event and let $q^i(\omega)=\frac{P(A\cap Q^i(\omega))}{P(Q^i(\omega))}$ be agent $i$'s posterior.
+
+If it is common knowledge at $\omega$ that $q^i(\omega)=q_i$ then let $P(\omega)$ be that member of the meet which contains $\omega$. Note we can write:
+$$P(\omega)=\cup_j\ Q^a_j$$
+where the $Q^a_j \in Q^a$ partition $P(\omega)$. Hence:
+$$\mu(A \ | \ P(\omega))=\frac{\mu(\cup_j\ A \cap Q^a_j)}{\mu(\cup_j\ Q^a_j)}=\frac{\sum_j \mu(Q_j^a) \cdot \mu(A \ | \ Q_j^a)}{\sum_j \mu(Q_j^a) }=\frac{\sum_j \mu(Q_j^a) \cdot q_a}{\sum_j \mu(Q_j^a) }=q_a$$
+by symmetry it also follows that:
+$$\mu(A \ | \ P(\omega))=q_b$$
+
+thus:
+$$q_a=q_b$$
+
+Thus two agents cannot agree (have common knowledge of posteriors) to disagree (which are unequal).
+
+## Bringing Things to Life
+
+We will now examine a generalization of Aumann's theorem by Geanakoplos and Polemarchakis. Continuing with the notation above agents $a$ and $b$ will interact dynamically as follows:
+
+Step $1$-
+Agent $a$ announces their posterior:
+$$q_1^a=\frac{\mu(A \cap Q^a(\omega))}{\mu(Q^a(\omega))}$$, 
+meaning $a$ could be in partitions:
+$$a_1=\{k \ | \ \frac{\mu(A \cap Q^a_k)}{\mu(Q^a_k)}=q_1^a\}$$
+Agent $b$ will then adjust their posterior and announce it as:
+$$q^b_1=\frac{\mu(A \cap (Q^b(\omega) \cap (\cup_{k \in a_1} Q^a_k)))}{\mu(Q^b(\omega) \cap (\cup_{k \in a_1} Q^a_k))}$$
+meaning $b$ could be in partitions:
+$$b_1=\{l \ | \ \frac{\mu(A \cap (Q^b_l \cap (\cup_{k \in a_1} Q^a_k)))}{\mu(Q^b_l \cap (\cup_{k \in a_1} Q^a_k))}=q_1^b\}$$
+
+Step $t$- 
+Agent $a$ will then adjust their posterior and announce it as:
+$$q_t^a=\frac{\mu(A \cap (Q^a(\omega) \cap (\cup_{l \in b_{t-1}} Q^b_l)))}{\mu(Q^a(\omega) \cap (\cup_{l \in b_{t-1}} Q^b_l))}$$, 
+meaning $a$ could be in partitions:
+$$a_t=\{k \in a_{t-1} \ | \ \frac{\mu(A \cap (Q^a_k \cap (\cup_{l \in b_{t-1}} Q^b_l)))}{\mu(Q^a_k \cap (\cup_{l \in b_{t-1}} Q^b_l))}=q_t^a\}$$
+Agent $b$ will then adjust their posterior and announce it as:
+$$q^b_t=\frac{\mu(A \cap (Q^b(\omega) \cap (\cup_{k \in a_t} Q^a_k)))}{\mu(Q^b(\omega) \cap (\cup_{k \in a_{t}} Q^a_k))}$$
+meaning $b$ could be in partitions:
+$$b_t=\{l \in l_{t-1} \ | \ \frac{\mu(A \cap (Q^b_l \cap (\cup_{k \in a_t} Q^a_k)))}{\mu(Q^b_l \cap (\cup_{k \in a_t} Q^a_k))}=q_t^b\}$$
+Importantly note that $q^a_t$ is a function of $b_{t-1}$, $a_t$ is a function of $a_{t-1}$ and $q^a_t$, and $q^b_t$ is a function of $a_t$. Thus if $a_t=a_{t-1}$ and $b_t=b_{t-1}$ then $q^{a}_{t+1}=q^{a}_t$, $a_{t+1}=a_t$ and $q^b_{t+1}=q^b_t$. Since $b_t$ is a function of $b_{t-1}$ and $q^b_t$, it also follows that $b_{t+1}=b_t$. In other words, if $a_t=a_{t-1}$ and $b_t=b_{t-1}$  then our agents have reached a communication equilibrium.
+
+Moreover, since $\forall i \in \mathbb{N}$,  $(a_{i} \supseteq a_{i+1}) \land (b_{i} \supseteq b_{i+1)}$ and $\max |a_1|=K$ and $\max |b_1|=L$, we know $\exists j \in [K+L]$ s.t.:
+$$(a_{j}=a_{j+1}) \land (b_{j}=b_{j+1}) $$
+Thus we are guaranteed convergence.
+
+To illustrate the point consider the following example where $(\Omega,\mathcal{F},\mu)=([8],2^{[8]},\#)$, $\omega=1$ and:
+\begin{align*}
+Q^a&=\{\{1,2,3,4,6\},\{5,7,8\}\}
+\\
+Q^b&=\{\{1,3,5,7\},\{2,4,6,8\}\}
+\end{align*}
+Additionally, suppose the event being communicated about is $A=\{3,4\}$. 
+
+Initially, $a$ will report a posterior of $\frac{2}{5}$. Then, $b$ will realize $a$ must be in the partition $\{1,2,3,4,5,6\}$ and the only possible true states of the world are $\{1,3\}$. Thus $b$ will report a posterior of $\frac{1}{2}$. Next, $a$ will realize $b$ must have been in the partition $\{1,3,5,7\}$ since otherwise $b$ would have reported a posterior of $\frac{1}{3}$. Subsequently, $a$ will also report a posterior of $\frac{1}{2}$ and a communication equilibrium will be reached since each agent knows the partition of the other.
+
+Just for fun, what would have occurred if $b$ started? Well the initial posterior reported would be $\frac{1}{4}$. Since to $a$, this probability is consistent with both of $b$'s partitions, $a$ will still think $\{1,2,3,4,6\}$ are the possible true states of the world. Thus $a$ will report a posterior of $\frac{2}{5}$ and the process proceeds as outlined above.
+
+Odd that our agents posteriors converged to the same thing no? 
+
+Suppose at some step at some step we have $a_{t+1}=a_{t}$ and $b_{t+1}=b_{t}$ (as we are guaranteed). Since $\forall k \in a_{t+1}=a_t$:
+$$\mu(A \cap \left(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)=q_{t+1}^a \cdot \mu(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )$$
+and $\forall l \in b_{t+1}=b_t$:
+$$\mu(A \cap \left(Q^b_l \cap \left(\cup_{k \in a_{t}} Q^a_k\right) \right)=q_{t+1}^b \cdot \mu(Q^b_l \cap \left(\cup_{k \in a_{_t}} Q^a_k\right) )$$
+we have:
+$$\sum_{k\in a_t}\mu(A \cap \left(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)=q_{t+1}^a \cdot \sum_{k \in a_t}\mu(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )$$
+and:
+$$\sum_{l \in b_t} \mu(A \cap \left(Q^b_l \cap \left(\cup_{k \in a_{t}} Q^a_k\right) \right)=q_{t+1}^b \cdot \sum_{l \in b_t}\mu(Q^b_l \cap \left(\cup_{k \in a_{_t}} Q^a_k\right) )$$
+Hence:
+$$\frac{\mu(A \cap \left(\cup_{k \in a_t}Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)}{\mu(\cup_{k \in a_t} Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )}=\frac{\mu(A \cap (\cup_{k \in a_t} \cup_{l \in b_t} Q^a_k \cap Q^b_l) )}{\mu(\cup_{k \in a_t} \cup_{l \in b_t} Q^a_k \cap Q^b_l)}=q^a_{t+1}$$
+and:
+$$\frac{\mu(A \cap \left(\cup_{l \in b_t}Q^b_l \cap \left(\cup_{k \in a_t} Q^a_k\right) \right)}{\mu(\cup_{l \in b_t} Q^b_l \cap \left(\cup_{k \in a_t} Q^a_k\right) )}=\frac{\mu(A \cap (\cup_{l \in b_t} \cup_{k \in a_t} Q^b_l \cap Q^a_k) )}{\mu(\cup_{l \in b_t} \cup_{k \in a_t} Q^b_l \cap Q^a_k)}=q^b_{t+1}$$
+, i.e. $q^a_{t+1}=q^b_{t+1}$
+
+## Common Knowledge Will Equilibriate
+Suppose an event $A$ is common knowledge in world $\omega$ for agent $a$ and $b$.
+
+Since agent $b$ knows $a$'s posteriors, when $a$ announces their posteriors, this will not rule out anything from $b$'s current partition. Thus $b$ will just report their initial posteriors. 
+
+Since $a$ knows $b$ knows $a$'s posteriors, $a$ knew their announcement would not rule out anything from $b$'s initial partition.
+
+At this point, our scenario is equivalent to starting with $a$ hearing $b$'s initial posteriors. 
+
+By the same reasoning as above, since $a$ knows $b$'s initial posteriors, $a$ will just report their initial posteriors.
+
+Through symmetry, we can continue this process identically ad infinitum.
+
+Thus, if $A$ is common knowledge at $\omega$, then agents $a$ and $b$ can't disagree forever!
+
+## Prediction Markets
+
+The logarithmic market scoring rule provides us with a tool which creates incentives for agents to tell us the truth during each step of this process. However, consider two agents interacting via a LMSR using the example where $\omega=1$,:
+\begin{align*}
+Q^a&=\{\{1,2,3,4,6\},\{5,7,8\}\}
+\\
+Q^b&=\{\{1,3,5,7\},\{2,4,6,8\}\}
+\end{align*}
+, and $A=\{3,4\}$. 
+
+Suppose the market's default estimate is $\mu(A)=\frac{1}{2}$ and $\mu(\neg A)=\frac{1}{2}$
+
+If agent $a$ were to start then $q^a_1=\frac{2}{5}$, $q^b_1=\frac{1}{2}$, and $q^a_2=\frac{1}{2}$. In this case, after adjusting their initial prior, agent $a$ would expect to make an amount proportional to:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{2/5}{1/2}\right)+\ln\left(\frac{3/5}{1/2}\right)\right)\approx -0.0204$$
+on their first report (i.e. lose money)!
+
+If agent $b$ were to start then $q^b_1=\frac{1}{4}$, $q^a_1=\frac{2}{5}$, and $q^b_1=\frac{1}{2}$. Hence, agent $b$ will eventually expect to lose money on their first report as well since:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{1/4}{1/2}\right)+\ln\left(\frac{3/4}{1/2}\right)\right)\approx -0.1438$$
+Thus, each agent might default to waiting for the other agent to report first since this could improve their posterior estimate. We can however bypass this if we slightly modify the LMSR, in the manner outlined below.
+
+When an agent submits a report, they no longer agree to pay the reward of only the prediction before them. Rather, they agree to pay the reward of _some_ prediction submitted before them. Firstly, this maintains the incentive to submit predictions since an agent expects to make money if the prediction they pay is different from theirs and lose nothing if it is identical. Secondly, this allows agents who change their beliefs to safely withdraw prior reports. Thus, we can quell agent's fears about retroactively expecting to lose money by announcing their predictions!
