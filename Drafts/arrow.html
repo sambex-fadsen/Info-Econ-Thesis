@@ -189,14 +189,6 @@ body {
     color: #FFFFFF;
 }
 </style>
-<div id="motivation" class="section level3">
-<h3>Motivation</h3>
-<p>I remember when I was a wee middle schooler and first heard about the Nader/Gore fiasco, my immediate reaction was “why the hell don’t we have a ranked-order voting system!?!”</p>
-<p>Almost a decade later, now that I am studying social choice and decision theory, I finally have an answer for my middle school self: Kenneth Arrow’s Impossiblity Theorem.</p>
-<p>Formally, the theorem states that <em>no</em> rank-order voting system with more than 2 candidates can satisfy unanimity, binary independence, and non-dictatorship simultaneously.</p>
-<p>Middle school Siddharth: “What the hell do I care about unanimity? Binary independence? How could there be a dictator if it’s a democracy!?”</p>
-<p>Oh silly Sidhu, let me explain…</p>
-</div>
 <div id="reasonable-demands" class="section level3">
 <h3>3 Reasonable Demands</h3>
 <p>Let’s start with some definitions. Given <span class="math inline">\(n\)</span> voters <span class="math inline">\(\{x_1,x_2...,x_n\}\)</span> and <span class="math inline">\(m\)</span> candidates <span class="math inline">\(\{y_1,y_2...,y_m\}\)</span>, we define <span class="math inline">\(\mathcal{O}\)</span> to be the set of all <span class="math inline">\(m!\)</span> <em>order preferences</em> over our candidates.</p>
@@ -316,15 +308,6 @@ C(P_1,P_2,...P_n)(A)&amp;=G(P_1(A),P_2(A),...P_n(A))
 \end{align*}\]</span></p>
 <p>Since <span class="math inline">\(P&#39;_k(S)=P&#39;_k(A)+P&#39;_k(B)=\frac{1}{2}\)</span> and <span class="math inline">\(P&#39;_k(T)=P&#39;_k(B)+P&#39;_k(C)=1\)</span>: <span class="math display">\[P&#39;_k(S \cap T)=P&#39;_k(B)=\frac{1}{2}=\frac{1}{2}\cdot 1=P&#39;_k(S) \cdot P&#39;_k(T)\]</span> Additionally, since <span class="math inline">\(\forall i \in [n] \backslash \{k\}\)</span>, <span class="math inline">\(P&#39;_i(S)=P&#39;_i(A)+P&#39;_i(B)=1\)</span> and <span class="math inline">\(P&#39;_i(T)=P&#39;_i(B)+P&#39;_i(C)=\frac{1}{2}\)</span>: <span class="math display">\[P&#39;_i(S \cap T)=P&#39;_i(B)=\frac{1}{2}=1\cdot \frac{1}{2}=P&#39;_i(S) \cdot P&#39;_i(T)\]</span> Thus by IPP, we must have: <span class="math display">\[C(P&#39;_1,P&#39;_2,...P&#39;_n)(B)=C(P&#39;_1,P&#39;_2,...P&#39;_n)(S \cap T)=C(P&#39;_1,P&#39;_2,...P&#39;_n)(S) \cdot C(P&#39;_1,P&#39;_2,...P&#39;_n)(T)\]</span> Hence: <span class="math display">\[\frac{1}{2}=\left(1-\frac{w_k}{2}\right)\cdot \left(\frac{1}{2}+\frac{w_k}{2}\right)\]</span> The only solutions to the above quadratic are <span class="math inline">\(w_k=0\)</span> and <span class="math inline">\(w_k=1\)</span>. However, <span class="math inline">\(w_k&gt;0\)</span> by assumption, implying <span class="math inline">\(w_k=1\)</span> and all other <span class="math inline">\(w_i=0\)</span>. This means for any given opinion pool <span class="math inline">\(\{P_1,P_2,...P_n\}\in \mathcal{M}^n\)</span>, <span class="math inline">\(\forall A \in \mathcal{F}\)</span>: <span class="math display">\[C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i \cdot P_i(A)=P_k(A)\]</span> In other words, we have found our dictator! Thus, given more than 2 measurable outcomes, <em>no</em> consensus function can satisfy IPP, SSFP, and non-dictatorship simultaneously :)</p>
 </div>
-</div>
-<div id="conclusion" class="section level3">
-<h3>Conclusion</h3>
-<p>Make sense now Sidhu?</p>
-<p>Middle school Siddharth: “No but I guess I believe you…”</p>
-<p>Yah, me too lol.</p>
-<p>I would classify Arrow’s Impossibility Theorem as <em>deeply</em> counter-intuitive, but it is one of the hallmarks of social choice theory.</p>
-<p>The essence of the theorem is that there is no ‘right’ way to aggregate opinions, and while that might sound dismal (bum dum tss), it also means that normative considerations are <em>inevitable</em> when we choose how to pool together people’s beliefs and tastes.</p>
-<p>Don’t get me wrong; the theorem is drop dead gorgeous. However, I suspect the Nobel Prize commitee’s decision to grant Arrow his award in 1972 was not primarily motivated by the result’s beauty, but rather, its damning revelation of the fundamentally human nature of economics.</p>
 </div>
 
 

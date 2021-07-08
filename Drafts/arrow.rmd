@@ -12,16 +12,6 @@ body {
     color: #FFFFFF;
 }
 </style>
-### Motivation
-I remember when I was a wee middle schooler and first heard about the Nader/Gore fiasco, my immediate reaction was "why the hell don't we have a ranked-order voting system!?!"
-
-Almost a decade later, now that I am studying social choice and decision theory, I finally have an answer for my middle school self: Kenneth Arrow's Impossiblity Theorem.
-
-Formally, the theorem states that _no_ rank-order voting system with more than 2 candidates can satisfy unanimity, binary independence, and non-dictatorship simultaneously.
-
-Middle school Siddharth: "What the hell do I care about unanimity? Binary independence? How could there be a dictator if it's a democracy!?"
-
-Oh silly Sidhu, let me explain...
 
 ### 3 Reasonable Demands
 
@@ -282,17 +272,3 @@ $$\frac{1}{2}=\left(1-\frac{w_k}{2}\right)\cdot \left(\frac{1}{2}+\frac{w_k}{2}\
 The only solutions to the above quadratic are $w_k=0$ and $w_k=1$. However, $w_k>0$ by assumption, implying $w_k=1$ and all other $w_i=0$. This means for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$, $\forall A \in \mathcal{F}$:
 $$C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i \cdot P_i(A)=P_k(A)$$
 In other words, we have found our dictator! Thus, given more than 2 measurable outcomes, _no_ consensus function can satisfy IPP, SSFP, and non-dictatorship simultaneously :)
-
-### Conclusion
-
-Make sense now Sidhu?
-
-Middle school Siddharth: "No but I guess I believe you..."
-
-Yah, me too lol. 
-
-I would classify Arrow's Impossibility Theorem as _deeply_ counter-intuitive, but it is one of the hallmarks of social choice theory. 
-
-The essence of the theorem is that there is no 'right' way to aggregate opinions, and while that might sound dismal (bum dum tss), it also means that normative considerations are _inevitable_ when we choose how to pool together people's beliefs and tastes. 
-
-Don't get me wrong; the theorem is drop dead gorgeous. However, I suspect the Nobel Prize commitee's decision to grant Arrow his award in 1972 was not primarily motivated by the result's beauty, but rather, its damning revelation of the fundamentally human nature of economics. 
