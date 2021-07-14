@@ -7,12 +7,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-<style>
-body {
-    background-color: #333;
-    color: #FFFFFF;
-}
-</style>
 
 ## Aumann's Agreement Theorem
 
@@ -102,13 +96,11 @@ $$\frac{\mu(A \cap \left(\cup_{l \in b_t}Q^b_l \cap \left(\cup_{k \in a_t} Q^a_k
 ## Common Knowledge Will Equilibriate
 Suppose an event $A$ is common knowledge in world $\omega$ for agent $a$ and $b$.
 
-Since agent $b$ knows $a$'s posteriors, when $a$ announces their posteriors, this will not rule out anything from $b$'s current partition. Thus $b$ will just report their initial posteriors. 
+Since agent $b$ knows $a$'s posteriors, when $a$ announces their posteriors, $b$ already knows this posterior from their current partition. Thus $b$ will just report their initial posteriors. 
 
-Since $a$ knows $b$ knows $a$'s posteriors, $a$ knew their announcement would not rule out anything from $b$'s initial partition.
+Since $a$ knows $b$ knows $a$'s posteriors, every element of $a$'s partition already indicated the announcement would not eliminate anything from $b$'s initial partition.
 
-At this point, our scenario is equivalent to starting with $a$ hearing $b$'s initial posteriors. 
-
-By the same reasoning as above, since $a$ knows $b$'s initial posteriors, $a$ will just report their initial posteriors.
+Additionally, since $a$ knows $b$'s initial posteriors, $a$'s current partition already contains all relevant information. Thus $a$ will just report their initial posteriors.
 
 Through symmetry, we can continue this process identically ad infinitum.
 

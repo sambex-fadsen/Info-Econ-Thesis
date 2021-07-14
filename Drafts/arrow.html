@@ -183,12 +183,6 @@ summary {
 </div>
 
 
-<style>
-body {
-    background-color: #333;
-    color: #FFFFFF;
-}
-</style>
 <div id="reasonable-demands" class="section level3">
 <h3>3 Reasonable Demands</h3>
 <p>Let’s start with some definitions. Given <span class="math inline">\(n\)</span> voters <span class="math inline">\(\{x_1,x_2...,x_n\}\)</span> and <span class="math inline">\(m\)</span> candidates <span class="math inline">\(\{y_1,y_2...,y_m\}\)</span>, we define <span class="math inline">\(\mathcal{O}\)</span> to be the set of all <span class="math inline">\(m!\)</span> <em>order preferences</em> over our candidates.</p>
@@ -219,94 +213,6 @@ body {
 <h4>All Pivots are the Same</h4>
 <p>Consider a preference profile <span class="math inline">\(\theta \in \mathcal{O}^n\)</span> such that <span class="math inline">\(\forall i \in [1,b|a)\)</span>: <span class="math display">\[\theta_i(b) \succ \theta_i(c)\]</span> and <span class="math inline">\(\forall i \in (b|a,n]\)</span>: <span class="math display">\[\theta_i(c) \succ \theta_i(b)\]</span> As we saw at the end of the last section, since <span class="math inline">\(\theta_{b|a}(b) \succ \theta_{b|a}(c)\)</span> we must have: <span class="math display">\[f(\theta)(b) \succ f(\theta)(c)\]</span> Thus <span class="math inline">\(b|c \leq b|a\)</span>.</p>
 <p>Now consider a preference profile <span class="math inline">\(\theta \in \mathcal{O}^n\)</span> such that <span class="math inline">\(\forall i \in [1,b|a)\)</span>: <span class="math display">\[\theta_i(c) \succ \theta_i(b)\]</span> and <span class="math inline">\(\forall i \in [b|a,n]\)</span>: <span class="math display">\[\theta_i(b) \succ \theta_i(c)\]</span> As we saw at the end of the last section, since <span class="math inline">\(\theta_{b|a}(b) \succ \theta_{b|a}(c)\)</span> we must have: <span class="math display">\[f(\theta)(b) \succ f(\theta)(c)\]</span> Thus <span class="math inline">\(c|b \geq b|a\)</span>. Putting this together with the previous inequality: <span class="math display">\[b|c \leq b|a \leq c|b\]</span> By symmetry we have: <span class="math display">\[c|b \leq c|a \leq b|c\]</span> Thus: <span class="math display">\[b|c=c|b=a|b=b|a=c|a=a|c\]</span> Since all pivots are the same, there exists a voter who gets to force each candidate below any other candidate in the aggregate preference. Thus this voter is a dictor, contradicting our assumption that <span class="math inline">\(f\)</span> is non-dictatorial!</p>
-</div>
-</div>
-<div id="probabilistic-arrows-theorem" class="section level3">
-<h3>Probabilistic Arrow’s Theorem</h3>
-<p>Now that we’ve seen the proof of Arrow’s theorem proper, I want to look at a slightly tweaked version!</p>
-<p>Instead of aggregating a group of individuals’ preference orders over of set of candidates, we are now going to aggregate their <em>probability distributions</em> over a measurable space <span class="math inline">\((\Omega, \mathcal{F})\)</span>.</p>
-<p>We require <span class="math inline">\(\Omega\)</span> contain more than 2 measurable outcomes (this is analagous to having more than <span class="math inline">\(2\)</span> candidates). Also, we will denote the set of all possible measures over <span class="math inline">\((\Omega, \mathcal{F})\)</span> by <span class="math inline">\(\mathcal{M}\)</span>.</p>
-<p>In particular, the probability distributions of our <span class="math inline">\(n\)</span> individuals will be characterized by a <em>opinion pool</em> <span class="math inline">\(\{P_1, P_2, ...P_n\} \in \mathcal{M}^n\)</span>.</p>
-<p>A <em>consensus function</em> will be a function <span class="math inline">\(C: \mathcal{M}^n \to \mathcal{M}\)</span> which maps a given opinion pool to a unique probability distribution over <span class="math inline">\((\Omega, \mathcal{F})\)</span>.</p>
-<p>Once again, we have three seemingly reasonable demands:</p>
-<p>First, <span class="math inline">\(C\)</span> satisfies the <em>independence preservation property</em> (IPP) iff : <span class="math display">\[(\forall i \in [n], \ P_i(A \cap B)=P_i(A)\cdot P_i(B)) \implies C(P_1,P_2,...P_n)(A\cap B)=C(P_1,P_2,...P_n)(A)\cdot C(P_1,P_2,...P_n)(B)\]</span> IPP parallels our previous notion of <em>unanimity</em> in that if each individual thinks events <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are independent, then the aggregate distribution also treats <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> as independent.</p>
-<p>Second, <span class="math inline">\(C\)</span> satisfies the <em>strong setwise function property</em> (SSFP) iff <span class="math inline">\(\exists G: [0,1]^n \to [0,1]\)</span> such that for any given opinion pool <span class="math inline">\(\{P_1,P_2,...,P_n\}\in \mathcal{M}^n\)</span>: <span class="math display">\[\forall A \in \mathcal{F}, \ C(P_1, P_2, ...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))\]</span> SSFP is analagous to <em>binary independence</em> since it implies the aggregate probability of a given event is uniquely determined by the probabilities each individual assigns to that event.</p>
-<p>Third, <span class="math inline">\(C\)</span> satisfies <em>non-dictatorship</em> iff: <span class="math display">\[\neg(\exists i \in [n] \ \text{s.t.} \ \forall \{P_1,P_2,...,P_n\}\in \mathcal{M}^n, \ \forall A \in \mathcal{F}, \ C(P_1,P_2,...P_n)(A)=P_i(A) )\]</span> As before, we will proceed by showing IPP + SSFP necessarily violate non-dictatorship.</p>
-<p>However, we need to first establish a crucial and somewhat surprising lemma…</p>
-<div id="ssfp-iff-consensus-is-linear" class="section level4">
-<h4>SSFP <span class="math inline">\(\iff\)</span> Consensus is Linear</h4>
-<p>We claim <span class="math inline">\(C\)</span> satisfies SSFP iff <span class="math inline">\(\exists w_1, w_2,...w_n \in [0,1]\)</span> such that <span class="math inline">\(\sum_{i=1}^n w_i=1\)</span> and for any given opinion pool <span class="math inline">\(\{P_1,P_2,...P_n\}\in \mathcal{M}^n\)</span>, <span class="math inline">\(\forall A \in \mathcal{F}\)</span>: <span class="math display">\[C(P_1,P_2,...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))=\sum_{i=1}^n w_i \cdot P_i(A)\]</span></p>
-<p><strong>Proof:</strong><br />
-It trivially follows that linear consensus <span class="math inline">\(\implies\)</span> SSFP so we will only show the other direction.</p>
-<p>Consider three disjoint non-empty subsets <span class="math inline">\(A, B, C \in \mathcal{F}\)</span> which partition <span class="math inline">\(\Omega\)</span> (we are guarenteed these exist by the assumption <span class="math inline">\(\Omega\)</span> has more than 2 measurable outcomes).</p>
-<p>Let <span class="math inline">\((a_1,b_1),(a_2,b_2),...(a_n,b_n) \in \mathbb{R}^2_{\geq 0}\)</span> so that <span class="math inline">\(\forall i \in [n], \ a_i+b_i \leq 1\)</span>. We construct an opinion pool <span class="math inline">\(\{P&#39;_1, P&#39;_2, ... P&#39;_n\} \in \mathcal{M}^n\)</span> so that: <span class="math display">\[\begin{align*}
-&amp;P&#39;_i(A)=a_i
-\\
-&amp;P&#39;_i(B)=b_i
-\\
-&amp;P&#39;_i(C)=1-(a_i+b_i)
-\end{align*}\]</span> By SSFP: <span class="math display">\[\begin{align*}
-G(a_1+b_1,a_2+b_2,...a_n+b_n)&amp;=G(P&#39;_1(A)+P&#39;_1(B),P&#39;_2(A)+P&#39;_2(B),...P&#39;_n(A)+P&#39;_n(B))
-\\
-&amp;=G(P&#39;_1(A\cup B),P&#39;_2(A\cup B),...P&#39;_n(A\cup B))
-\\
-&amp;=C(P&#39;_1,P&#39;_2,...P&#39;_n)(A \cup B)
-\\
-&amp;=C(P&#39;_1,P&#39;_2,...P&#39;_n)(A)+C(P&#39;_1,P&#39;_2,...P&#39;_n)(B)
-\\
-&amp;=G(P&#39;_1(A),P&#39;_2(A),...P&#39;_n(A))+G(P&#39;_1(B),P&#39;_2(B),...P&#39;_n(B))
-\\
-&amp;=G(a_1,a_2,...a_n)+G(b_1,b_2,...b_n)
-\end{align*}\]</span></p>
-<p>In particular, this implies <span class="math inline">\(\forall x=\{x_1,x_2,...x_n\}\in [0,1]^n\)</span>: <span class="math display">\[\begin{align*}
-G(x_1,x_2,...x_n)=G(x_1,0,...0)+G(0,x_2,...x_n)=\sum_{i=1}^n G(0,...0,x_i,0,...0)
-\end{align*}\]</span> More concisely, if we write <span class="math inline">\(G_i(a)=G(\underbrace{0,...0}_{i-1\ 0&#39;s},a,0,...0)\)</span> then: <span class="math display">\[G(x)=\sum_{i=1}^n G_i(x_i)\]</span> Now if <span class="math inline">\(a,b \in [0,1]\)</span> so that <span class="math inline">\(a+b \in [0,1]\)</span>, then from before: <span class="math display">\[\begin{align*}
-G_i(a+b)&amp;=G(0,...0,a+b,0,...0)
-\\
-&amp;=G(0,...0,a,0,...0)+G(0,...0,b,0,...0)
-\\
-&amp;=G_i(a)+G_i(b)
-\end{align*}\]</span> , i.e. each <span class="math inline">\(G_i\)</span> satisfies the Cauchy functional equation on the unit interval. Note <span class="math inline">\(\forall n \in \mathbb{N}^+\)</span>: <span class="math display">\[G_i(x)=G_i\left(\frac{n}{n}\cdot x\right)=n\cdot G_i\left(\frac{x}{n}\right)\]</span> , i.e. <span class="math display">\[\frac{1}{n}\cdot G_i(x)=G_i\left(\frac{x}{n}\right)\]</span> Now if <span class="math inline">\(m\in \mathbb{N}_{\geq 0}\)</span> so that <span class="math inline">\(\frac{m}{n} \in \mathbb{Q}_{\geq 0} \cap [0,1]\)</span> then: <span class="math display">\[G_i\left(\frac{m}{n}\cdot x\right)=m\cdot G_i\left(\frac{x}{n}\right)=\frac{m}{n}\cdot G_i(x)\]</span> Finally <span class="math inline">\(\forall r \in [0,1]\)</span> can pick a rational <span class="math inline">\(q_r \in [0,1]\)</span> arbitrarily close so that <span class="math inline">\(d_r=r-q_r \in [0,\frac{1}{N}]\)</span> for any given <span class="math inline">\(N \in \mathbb{N}\)</span>. Note: <span class="math display">\[\begin{align*}
-G_i(r)-G_i(1)\cdot r&amp;=G_i(r-q_r+q_r)-G_i(1)\cdot r
-\\
-&amp;=G_i(r-q_r)+G_i(q_r)-G_i(1)\cdot r
-\\
-&amp;=G_i(r-q_r)+(q_r-r)\cdot G_i(1)
-\\
-&amp;=G_i(d_r)-d_r\cdot G_i(1)
-\end{align*}\]</span> We know <span class="math inline">\(\text{Im}(G_i)\subseteq [0,1]\)</span> as its values must be probabilities. Thus <span class="math inline">\(G_i(d_r)\leq \frac{1}{N}\)</span> (otherwise <span class="math inline">\(G_i(N \cdot d_r)=N \cdot G_i(d_r) &gt; 1\)</span>) and <span class="math inline">\(G_i(1) \leq 1\)</span>. Hence: <span class="math display">\[|G_i(r)-G_i(1)\cdot r|=|G_i(d_r)-d_r\cdot G_i(1)|\leq |G_i(d_r)|+d_r\cdot|G_i(1)| \leq \frac{2}{N}\]</span> Taking the limit as <span class="math inline">\(N \to \infty\)</span> yields: <span class="math display">\[G_i(r)=G_i(1)\cdot r\]</span> Thus <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math inline">\(G_i\)</span> is of the form: <span class="math display">\[G_i(x)=w_i \cdot x\]</span> where <span class="math inline">\(w_i \in [0,1]\)</span>.</p>
-<p>Putting things together, this implies for any given opinion pool <span class="math inline">\(\{P_1,P_2,...P_n\} \in \mathcal{M}^n\)</span>, <span class="math inline">\(\forall A \in \mathcal{A}\)</span>: <span class="math display">\[\begin{align*}
-C(P_1,P_2,...P_n)(A)&amp;=G(P_1(A),P_2(A),...P_n(A))
-\\
-&amp;=\sum_{i=1}^n G_i(P_i(A))
-\\
-&amp;=\sum_{i=1}^n w_i \cdot P_i(A)
-\end{align*}\]</span></p>
-<p>In particular, when <span class="math inline">\(A=\Omega\)</span> we have: <span class="math display">\[1=C(P_1,P_2,...P_n)(\Omega)=\sum_{i=1}^n w_i \cdot P_i(\Omega)=\sum_{i=1}^n w_i\]</span> as desired. Phew! <span class="math inline">\(\square\)</span></p>
-</div>
-<div id="ipp-ssfp-implies-dictatorship" class="section level4">
-<h4>IPP + SSFP <span class="math inline">\(\implies\)</span> Dictatorship</h4>
-<p>As before, consider three disjoint non-empty subsets <span class="math inline">\(A, B, C \in \mathcal{F}\)</span> which partition <span class="math inline">\(\Omega\)</span>. By the above, SSFP implies <span class="math inline">\(\exists w_1,w_2...w_n \in [0,1]\)</span> summing to <span class="math inline">\(1\)</span> so that for any given opinion pool <span class="math inline">\(\{P_1,P_2,...P_n\}\in \mathcal{M}^n\)</span>:</p>
-<p><span class="math display">\[\begin{align*}
-&amp;C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i P_i(A)
-\\
-&amp;C(P_1,P_2,...P_n)(B)=\sum_{i=1}^n w_i P_i(B)
-\\
-&amp;C(P_1,P_2,...P_n)(C)=\sum_{i=1}^n w_i P_i(C)
-\end{align*}\]</span></p>
-<p>Since not all <span class="math inline">\(w_i\)</span> can be zero we know <span class="math inline">\(\exists k \in [n]\)</span> so that <span class="math inline">\(w_k&gt;0\)</span>. We construct an opinion pool <span class="math inline">\(\{P&#39;_1,P&#39;_2,...P&#39;_n\}\)</span> so that: <span class="math display">\[\left(P&#39;_k(A),\ P&#39;_k(B), P&#39;_k(C)\right)=\left(0,\frac{1}{2},\frac{1}{2} \right)\]</span> and <span class="math inline">\(\forall i \in [n] \backslash \{k\}\)</span>: <span class="math display">\[\left(P&#39;_i(A),\ P&#39;_i(B), P&#39;_i(C)\right)=\left(\frac{1}{2},\frac{1}{2},0 \right)\]</span> Note: <span class="math display">\[\begin{align*}
-&amp;C(P&#39;_1,P&#39;_2,...P&#39;_n)(A)=\frac{1-w_k}{2}
-\\
-&amp;C(P&#39;_1,P&#39;_2,...P&#39;_n)(B)=\frac{1}{2}
-\\
-&amp;C(P&#39;_1,P&#39;_2,...P&#39;_n)(C)=\frac{w_k}{2}
-\end{align*}\]</span></p>
-<p>Consider the events <span class="math inline">\(S=A \cup B\)</span> and <span class="math inline">\(T=B \cup C\)</span>. By the above: <span class="math display">\[\begin{align*}
-&amp;C(P&#39;_1,P&#39;_2,...P&#39;_n)(S)=\frac{1-w_k}{2}+\frac{1}{2}=1-\frac{w_k}{2}
-\\
-&amp;C(P&#39;_1,P&#39;_2,...P&#39;_n)(T)=\frac{1}{2}+\frac{w_k}{2}
-\end{align*}\]</span></p>
-<p>Since <span class="math inline">\(P&#39;_k(S)=P&#39;_k(A)+P&#39;_k(B)=\frac{1}{2}\)</span> and <span class="math inline">\(P&#39;_k(T)=P&#39;_k(B)+P&#39;_k(C)=1\)</span>: <span class="math display">\[P&#39;_k(S \cap T)=P&#39;_k(B)=\frac{1}{2}=\frac{1}{2}\cdot 1=P&#39;_k(S) \cdot P&#39;_k(T)\]</span> Additionally, since <span class="math inline">\(\forall i \in [n] \backslash \{k\}\)</span>, <span class="math inline">\(P&#39;_i(S)=P&#39;_i(A)+P&#39;_i(B)=1\)</span> and <span class="math inline">\(P&#39;_i(T)=P&#39;_i(B)+P&#39;_i(C)=\frac{1}{2}\)</span>: <span class="math display">\[P&#39;_i(S \cap T)=P&#39;_i(B)=\frac{1}{2}=1\cdot \frac{1}{2}=P&#39;_i(S) \cdot P&#39;_i(T)\]</span> Thus by IPP, we must have: <span class="math display">\[C(P&#39;_1,P&#39;_2,...P&#39;_n)(B)=C(P&#39;_1,P&#39;_2,...P&#39;_n)(S \cap T)=C(P&#39;_1,P&#39;_2,...P&#39;_n)(S) \cdot C(P&#39;_1,P&#39;_2,...P&#39;_n)(T)\]</span> Hence: <span class="math display">\[\frac{1}{2}=\left(1-\frac{w_k}{2}\right)\cdot \left(\frac{1}{2}+\frac{w_k}{2}\right)\]</span> The only solutions to the above quadratic are <span class="math inline">\(w_k=0\)</span> and <span class="math inline">\(w_k=1\)</span>. However, <span class="math inline">\(w_k&gt;0\)</span> by assumption, implying <span class="math inline">\(w_k=1\)</span> and all other <span class="math inline">\(w_i=0\)</span>. This means for any given opinion pool <span class="math inline">\(\{P_1,P_2,...P_n\}\in \mathcal{M}^n\)</span>, <span class="math inline">\(\forall A \in \mathcal{F}\)</span>: <span class="math display">\[C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i \cdot P_i(A)=P_k(A)\]</span> In other words, we have found our dictator! Thus, given more than 2 measurable outcomes, <em>no</em> consensus function can satisfy IPP, SSFP, and non-dictatorship simultaneously :)</p>
 </div>
 </div>
 
