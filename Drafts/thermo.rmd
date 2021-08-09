@@ -1,0 +1,70 @@
+Automated market makers (AMM's) are an elegant technology that exploit the duality between prices and probabilities to run prediction markets.
+
+Given a disjoint partition of outcomes $\{1,2,...,N\}$ for some event, an AMM buys and sells securities corresponding to each outcome $i$ of the form "pays \$1 if $i$ occurs." Let $\vec{q}$ be the vector whose $i$th entry represents the number of shares of security $i$ held by the traders. Since the point of an AMM is to easily interpret prices as probabilities, we want security $i$'s price to increase if $q_i$ increases (the traders purchase some amount of security $i$) and decrease if $q_i$ decreases (the traders sell some amount of security $i$). However, this means that the price of a security must change for each infinitesimal amount of its' shares that are bought or sold. Thus, prediction markets must use a 'cost function' $C$ to dictate how much an traders will have to pay for a specific transaction given the market's current state. For instance, if the market's participants currently hold $q_i$ of each security collectively and a trader wishes to now transact $r_i$ shares of each security, then this action would cost them:
+$$C(\vec{q}+\vec{r})-C(\vec{q})$$
+Note if we parameterize the path from $\vec{q}$ to $\vec{q}+\vec{r}$ by some function $a(t)$, then the price of security $i$ at each point along the transaction is given by:
+$$p_i(a(t))=\frac{\partial C}{\partial a_i}$$
+There are many different cost functions which can be used to run a prediction market, however the cost function:
+$$C(\vec{q})=b\cdot \ln \sum_{i=1}^N e^{q_i/b}$$
+is particularly nice since its' prices are of the form:
+$$p_i(\vec{q})=\frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}$$
+, i.e. the Boltzmann distribution!
+
+Note that in a Boltzmann AMM:
+$$C(\vec{0})=b \cdot \ln(N)$$
+
+Moreover, it can be shown that the the maximum amount of money a Boltzmann AMM must pay out to its' participants is bounded above by: 
+$$b \cdot \ln(N)$$
+, which can be thought of as a subsidy amount that is used as the market's funding pool
+
+Thus at any given point in time before the outcome of the event in question becomes common knowledge, the cost function of a Boltzmann AMM indicates how much money agents have given the market in the course of making bets in addition to the market's own funding pool. Therefore, the amount of money the market has given out at any point in time is:
+$$F_{\text{AMM}}(\vec{q})=-(C(\vec{q})-b\cdot \ln(N))=-b \cdot \ln \frac{\sum_{i=1}^N e^{q_i/b}}{N}=-b\cdot \ln \langle e^{q_i/b} \rangle$$
+Note that if we interpret the amount of security $i$ held by the traders as the work performed by the AMM in state $i$, then $F_{\text{AMM}}$ is identical to the change in free energy from our initial state in an equilibrium thermodynamic process. Moreover, the market's prices/probabilities determine the energy landscape of our system.
+
+This allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by average number of shares sold to the market for each security $i$ since by Jensen's:
+
+\begin{align*}
+&\langle e^{q_i/b} \rangle \geq e^{\frac{\sum_{i=1}^N q_i/b}{N}}
+\\
+&\to \ln \langle e^{q_i/b} \rangle \geq \frac{\sum_{i=1}^N q_i/b}{N}
+\\
+&\to -b\cdot \ln \langle e^{q_i/b} \rangle \leq -\frac{\sum_{i=1}^N q_i}{N}
+\\
+&\to F_{\text{AMM}}(\vec{q}) \leq -\frac{\sum_{i=1}^N q_i}{N}
+\end{align*}
+
+Moreover, if a trader's beliefs (Pr$_{\text{trader}}$) disagrees with the current probability distribution given by the AMM's prices (Pr$_{\text{AMM}}$) then according to their coarse graining, the change in free energy is:
+$$F_{\text{trader}}=-b\cdot \ln \langle e^{q_i/b} \rangle+b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$$
+, i.e. they believe the market has given out $b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$ more dollars than the market believes. 
+
+Indeed since the Boltzmann AMM is equivalent to a LMSR, if the trader carries out the appropriate transaction to adjust the market's prices to $\text{Pr}_{\text{trader}}$ (by changing the amount of each security sold from $\vec{q}$ to $\vec{Q}$), then they will expect to profit:
+$$b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$$
+and both the trader and the AMM will now believe the market has given out:
+\begin{align*}
+F_{\text{AMM}}&=F_{\text{trader}}
+\\
+&=-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{Q}))
+\\
+&=-b\cdot \ln \langle e^{q_i/b} \rangle+b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{Q_i}}\right)
+\end{align*}
+which tracks with $\sum_{i=1}^N e^{q_i}$ and $\sum_{i=1}^N e^{Q_i}$ being partition functions. 
+
+Here's what is going on overall:
+
+\begin{align*}
+&\to \text{[Initial landscape has certain amount of free energy]}
+\\
+&\to \text{[Trader disagrees with landscape and expects to profit from extra free energy by performing (potentially negative) work]}
+\\
+&\to \text{[Adjustment shifts landscape so that free energy corresponds to new partition function]}
+\\
+&\to \text{[Rinse and repeat]}
+\end{align*}
+
+_____
+
+Note:
+$$\Delta F_{\text{AMM}}=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{Q_i}}\right)$$
+but:
+$$\Delta F_{\text{trader}}=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{Q_i}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$$
+We can interpret this discrepancy as due to the 'arbitrage oppurtunity' arising from the system being out of equilibrium no longer existing for the trader and never having existed for the market. 
