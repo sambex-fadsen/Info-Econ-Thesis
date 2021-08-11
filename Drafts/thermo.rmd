@@ -1,7 +1,9 @@
 ---
 title: "Thermodynamics in Prediction Markets"
 author: "~sambex-fadsen"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -87,7 +89,7 @@ This is nice because the first quantity tracks with the change in free energy fo
 
 Moreover, we can interpret the discrepancy between the free energies as due to the 'arbitrage oppurtunity' arising from the system being out of equilibrium no longer existing for the trader and never having existed for the market. 
 
-Alternatively, suppose our trader waits to adjust the market's prices to their beliefs and another participant comes along in the mean time and adjusts the market's prices to $\text{Pr}_{\text{participant}}$ (by changing the amount of each security sold from $\vec{q}$ to $\vec{q}'$). Then trader will now believe the change in free energy is:
+Alternatively, suppose our trader waits to adjust the market's prices to their beliefs and another participant comes along in the mean time and adjusts the market's prices to $\text{Pr}_{\text{participant}}$ (by changing the amount of each security sold from $\vec{q}$ to $\vec{q}'$). Then the trader will now believe the change in free energy is:
 \begin{align*}
 \Delta F_{\text{trader}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}')) + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}}) \right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \\
