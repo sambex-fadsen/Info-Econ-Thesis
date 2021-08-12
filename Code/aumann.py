@@ -63,7 +63,6 @@ def communicate(world, event, agent_A, agent_B):
 		posterior_B=len(set(event) & (set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A))))/len(set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A)))
 		B_report.append(posterior_B)
 		newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
-
 	return (A_report,B_report)
 
 def check_rtrctv_rgrt(report):
