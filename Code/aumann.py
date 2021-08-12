@@ -98,4 +98,3 @@ while(rtrctv_rgrt==False):
 print(agent_A)
 print(agent_B)
 print(reports)
-print(num_it)
