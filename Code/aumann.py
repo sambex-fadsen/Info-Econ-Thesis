@@ -42,7 +42,7 @@ def posterior(event, chunk, opp_part, opp_chnks):
 #info partition, and opponent's possible chunks
 #Returns possible chunks consistent with
 #reported posterior
-def pssblchnks(post, event, part, opp_part, opp_chnks):
+def pssblchnks(post, event, part, opp_part, opp_chnks, oldpssblchnks):
 	chnks=[]
 	for chunk in part:
 		if len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))!=0:
@@ -51,7 +51,7 @@ def pssblchnks(post, event, part, opp_part, opp_chnks):
 			chunk_post="Undefined"
 		if chunk_post==post:
 			chnks.append(part.index(chunk))
-	return chnks
+	return list(set(chnks) & set(oldpssblchnks))
 
 #Given true state of world, event, and
 #both agents' information partitions
@@ -67,11 +67,11 @@ def communicate(world, event, agent_A, agent_B):
 	
 	posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 	A_report.append(posterior_A)
-	newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B)
+	newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B, oldpssblchnks_A)
 	
 	posterior_B=posterior(event, chunk_B, agent_A, newpssblchnks_A)
 	B_report.append(posterior_B)
-	newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
+	newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A, oldpssblchnks_B)
 
 	while (newpssblchnks_A!=oldpssblchnks_A or newpssblchnks_B!=oldpssblchnks_B):
 		oldpssblchnks_A=newpssblchnks_A
@@ -79,44 +79,56 @@ def communicate(world, event, agent_A, agent_B):
 	
 		posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 		A_report.append(posterior_A)
-		newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B)
+		newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B, oldpssblchnks_A)
 
 		posterior_B=posterior(event, chunk_B, agent_A, newpssblchnks_A)
 		B_report.append(posterior_B)
-		newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
+		newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A, oldpssblchnks_B)
 	return (A_report,B_report)
 
-#Given list of reported posteriors
+#Given agent's current belief,
+#initial report, and final report
+#Returns expected payoff of report
+def payoff(belief,init_rprt,fin_rprt):
+	if init_rprt==0:
+		init_rprt=0.01
+	if init_rprt==1:
+		init_rprt=0.99
+	if fin_rprt==0:
+		fin_rprt=0.01
+	if fin_rprt==1:
+		fin_rprt=0.99
+	payoff=belief*math.log(fin_rprt/init_rprt)+(1-belief)*math.log((1-fin_rprt)/(1-init_rprt))
+	return payoff
+
+#Given lists of reported posteriors
 #Checks if an agent ever retroactively
 #regrets any of their reports
-def check_rtrctv_rgrt(report):
-	Report=[1/2]+report
-	for i in range(1,len(Report)):
-		for j in range(i):
-			if Report[j]==0:
-				Report[j]=0.01
-			if Report[j+1]==0:
-				Report[j+1]=0.01
-			if Report[j]==1:
-				Report[j]=0.99
-			if Report[j+1]==1:
-				Report[j+1]=0.99
-			payoff=Report[i]*math.log(Report[j+1]/Report[j])+(1-Report[i])*math.log((1-Report[j+1])/(1-Report[j]))
-			if payoff<0:
-				return True
+def check_rtrctv_rgrt(reports):
+	for i in range(len(reports[0])):
+		for j in range(2):
+			for k in range(i+1):
+				if (k==0 and j==0):
+					if payoff(reports[j][i], 1/2, reports[j][k])<0:
+						return True
+				elif (j==0): 
+					if payoff(reports[j][i], reports[j+1][k-1], reports[j][k])<0:
+						return True
+				elif (j==1):
+					if payoff(reports[j][i], reports[j-1][k], reports[j][k])<0:
+						return True
 	return False
 			
 
 world=1
-event=[5,10,15,20]
+event=[5,10,15,20,25]
 
-rtrctv_rgrt=False
-while(rtrctv_rgrt==False):
+while(True):
 	agent_A=partition(list(range(1,26)))
 	agent_B=partition(list(range(1,26)))
 	reports=communicate(world,event,agent_A,agent_B)
-	if (check_rtrctv_rgrt(reports[0])==True or check_rtrctv_rgrt(reports[1])==True):
-		rtrctv_rgrt=True
+	if check_rtrctv_rgrt(reports)==True:
+		break
 
 print(agent_A)
 print(agent_B)
