@@ -86,8 +86,8 @@ def communicate(world, event, agent_A, agent_B):
 	return (A_report,B_report)
 
 #Given list of reported posteriors
-#Checks if an agent retroactively regrets
-#any of their reports
+#Checks if an agent ever retroactively
+#regrets any of their reports
 def check_rtrctv_rgrt(report):
 	Report=[1/2]+report
 	for i in range(1,len(Report)):
