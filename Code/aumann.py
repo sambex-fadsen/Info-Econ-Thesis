@@ -1,7 +1,8 @@
 import random
 import math
 
-#Randomly partitions a given list
+#Given list of worlds
+#Generates random info partition
 def partition(lst):
 	if len(lst)==1:
 		return [lst]
