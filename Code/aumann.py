@@ -1,6 +1,7 @@
 import random
 import math
 
+#Randomly partitions a given list
 def partition(lst):
 	if len(lst)==1:
 		return [lst]
@@ -14,21 +15,32 @@ def partition(lst):
 			part[place].append(lst[-1])
 			return part
 
+#Given a world and an info partition
+#Returns chunk the world is contained in
 def which_chunk(world, part):
 	for chunk in part:
 		if world in chunk:
 			return chunk
 
+#Given info partition and list of chunk indices
+#Returns union of chunks corresponding to indices
 def unionchnks(part,chnks):
 	union=[]
 	for i in chnks:
 		union+=part[i]
 	return union
 
+#Given event, chunk of agent, opponent's info partition, 
+#and list of opponent's possible chunks
+#Returns posterior of agent
 def posterior(event, chunk, opp_part, opp_chnks):
 	post=len(set(event) & (set(chunk) & set(unionchnks(opp_part, opp_chnks))))/len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))
 	return post
 
+#Given posterior, event, info partition, opponent's
+#info partition, and opponent's possible chunks
+#Returns possible chunks consistent with
+#reported posterior
 def pssblchnks(post, event, part, opp_part, opp_chnks):
 	chnks=[]
 	for chunk in part:
@@ -40,6 +52,10 @@ def pssblchnks(post, event, part, opp_part, opp_chnks):
 			chnks.append(part.index(chunk))
 	return chnks
 
+#Given true state of world, event, and
+#both agents' information partitions
+#Simulates communication process and returns
+#list of reported posteriors for both agents
 def communicate(world, event, agent_A, agent_B):
 	chunk_A=which_chunk(world,agent_A)
 	chunk_B=which_chunk(world,agent_B)
@@ -69,6 +85,9 @@ def communicate(world, event, agent_A, agent_B):
 		newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
 	return (A_report,B_report)
 
+#Given list of reported posteriors
+#Checks if an agent retroactively regrets
+#any of their reports
 def check_rtrctv_rgrt(report):
 	Report=[1/2]+report
 	for i in range(1,len(Report)):
