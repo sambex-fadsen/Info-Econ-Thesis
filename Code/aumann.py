@@ -25,14 +25,18 @@ def unionchnks(part,chnks):
 		union+=part[i]
 	return union
 
-def pssblchnks(posterior, event, part, opp_part, opp_chnks):
+def posterior(event, chunk, opp_part, opp_chnks):
+	post=len(set(event) & (set(chunk) & set(unionchnks(opp_part, opp_chnks))))/len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))
+	return post
+
+def pssblchnks(post, event, part, opp_part, opp_chnks):
 	chnks=[]
 	for chunk in part:
 		if len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))!=0:
-			chunk_post=len(set(event) & (set(chunk) & set(unionchnks(opp_part, opp_chnks))))/len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))
+			chunk_post=posterior(event, chunk, opp_part, opp_chnks)
 		else:
 			chunk_post="Undefined"
-		if chunk_post==posterior:
+		if chunk_post==post:
 			chnks.append(part.index(chunk))
 	return chnks
 
@@ -43,12 +47,12 @@ def communicate(world, event, agent_A, agent_B):
 	oldpssblchnks_B=range(len(agent_B))
 	A_report=[]
 	B_report=[]
-
-	posterior_A=len(set(event) & (set(chunk_A) & set(unionchnks(agent_B, oldpssblchnks_B))))/len(set(chunk_A) & set(unionchnks(agent_B, oldpssblchnks_B)))
+	
+	posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 	A_report.append(posterior_A)
 	newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B)
-
-	posterior_B=len(set(event) & (set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A))))/len(set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A)))
+	
+	posterior_B=posterior(event, chunk_B, agent_A, newpssblchnks_A)
 	B_report.append(posterior_B)
 	newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
 
@@ -56,11 +60,11 @@ def communicate(world, event, agent_A, agent_B):
 		oldpssblchnks_A=newpssblchnks_A
 		oldpssblchnks_B=newpssblchnks_B
 	
-		posterior_A=len(set(event) & (set(chunk_A) & set(unionchnks(agent_B, oldpssblchnks_B))))/len(set(chunk_A) & set(unionchnks(agent_B, oldpssblchnks_B)))
+		posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 		A_report.append(posterior_A)
 		newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B)
 
-		posterior_B=len(set(event) & (set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A))))/len(set(chunk_B) & set(unionchnks(agent_A, newpssblchnks_A)))
+		posterior_B=posterior(event, chunk_B, agent_A, newpssblchnks_A)
 		B_report.append(posterior_B)
 		newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A)
 	return (A_report,B_report)
