@@ -202,7 +202,7 @@ b\cdot (q_i&#39;-q_i)-(C(\vec{q}&#39;)-C(\vec{q}))&amp;=b \cdot \left(q_i&#39;- 
 <p>Now that we have established the Boltzmann AMM is equivalent to a LMSR, it follows the maximum amount of money the market must pay out to its participants is: <span class="math display">\[b \cdot \ln(N)\]</span> which can be thought of as the subsidy the market uses for its own funding pool.</p>
 <p>Additionally since: <span class="math display">\[C(\vec{0})=b\cdot \ln\left(\sum_{i=1}^N e^{0/b}\right)=b \cdot \ln(N)\]</span></p>
 <p>and <span class="math inline">\(C(\vec{q})-C(\vec{0})\)</span> represents how much money agents must give the market for it to issue <span class="math inline">\(\vec{q}\)</span> of each security, the cost function of a Boltzmann AMM indicates how much money agents have given the market in the course of making bets in addition to the market’s own funding pool. Therefore, the amount of money the market has given out at any point in time is: <span class="math display">\[F_{\text{AMM}}(\vec{q})=-(C(\vec{q})-b\cdot \ln(N))=-b \cdot \ln \frac{\sum_{i=1}^N e^{q_i/b}}{N}=-b\cdot \ln \langle e^{q_i/b} \rangle\]</span> This is exactly parallels Jarzynski’s equality and suggests we should start drawing some analogies! Note that if we interpret the amount of security <span class="math inline">\(i\)</span> held by the traders as the work performed by the AMM in state <span class="math inline">\(i\)</span>, then <span class="math inline">\(F_{\text{AMM}}\)</span> (or the amount of money the market has given out) is identical to the equilibrium free energy in a thermodynamic process. This makes sense since the more money the market gives out, the more its capacity to perform work (have securities bought from it).</p>
-<p>This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by average number of shares sold to the market for each security <span class="math inline">\(i\)</span> since by Jensen’s: <span class="math display">\[\begin{align*}
+<p>This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by the average number of shares sold to the market for each security <span class="math inline">\(i\)</span> since by Jensen’s: <span class="math display">\[\begin{align*}
 &amp;\langle e^{q_i/b} \rangle \geq e^{\frac{\sum_{i=1}^N q_i/b}{N}}
 \\
 &amp;\to \ln \langle e^{q_i/b} \rangle \geq \frac{\sum_{i=1}^N q_i/b}{N}
@@ -212,6 +212,31 @@ b\cdot (q_i&#39;-q_i)-(C(\vec{q}&#39;)-C(\vec{q}))&amp;=b \cdot \left(q_i&#39;- 
 &amp;\to F_{\text{AMM}}(\vec{q}) \leq -\frac{\sum_{i=1}^N q_i}{N}
 \end{align*}\]</span> , giving as a version of the second law of thermodynamics!</p>
 </div>
+<div id="the-second-law-for-any-transaction" class="section level2">
+<h2>The Second Law For Any Transaction</h2>
+<p>The above version of the second law only applies for a transaction in which there is intially <span class="math inline">\(\vec{0}\)</span> of each security issued.</p>
+<p>In general, if the amount of each security sold changes from <span class="math inline">\(\vec{q}\)</span> to <span class="math inline">\(\vec{q}&#39;\)</span> then the change in free energy of our prediction market (or the amount of money it gives out in the transaction) is:</p>
+<p><span class="math display">\[\begin{align*}
+\Delta F_{\text{AMM}}&amp;=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}&#39;))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
+\\
+&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right)
+\end{align*}\]</span></p>
+<p>and the average work performed on the market (or the expected number of paying shares the market bought) is: <span class="math display">\[\overline{W}=\sum_{i=1}^N-(q&#39;_i-q_i)\cdot p_i(\vec{q})\]</span> We wish to show: <span class="math display">\[\Delta F_{\text{AMM}} \leq \overline{W}\]</span> i.e., the amount of money given out by the market in a transaction is bounded above by the expected number of paying shares the market bought.</p>
+<p>This is the case iff: <span class="math display">\[\begin{align*}
+&amp; b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right) \leq \sum_{i=1}^N-(q&#39;_i-q_i)\cdot p_i(\vec{q})
+\\
+&amp; \iff b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right) \leq \sum_{i=1}^N-(q&#39;_i-q_i)\cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}
+\\
+&amp; \iff \frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}} \leq \frac{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
+\\
+&amp; \iff \frac{\sum_{i=1}^N e^{q_i/b}}{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\leq \frac{\sum_{i=1}^N e^{q_i&#39;/b}}{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
+\end{align*}\]</span> Indeed, since <span class="math inline">\(\frac{\sum_{i=1}^N e^{q_i&#39;/b}}{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\)</span> is a convex function of <span class="math inline">\(\vec{q}&#39;\)</span> and setting: <span class="math display">\[\begin{align*}
+\frac{\partial}{\partial q&#39;_k}\left(\frac{\sum_{i=1}^N e^{q_i&#39;/b}}{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\right)&amp;=\frac{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot e^{q&#39;_k/b}-e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot \frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q&#39;_i/b}}{\left(e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}\right)^2}
+\\
+&amp;=\frac{e^{q&#39;_k/b}-\frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q&#39;_i/b}}{e^{q&#39;_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}=0
+\end{align*}\]</span> yields: <span class="math display">\[\frac{e^{q&#39;_k/b}}{\sum_{i} e^{q&#39;_i/b}}=\frac{e^{q_k/b}}{\sum_{i} e^{q_i/b}}\]</span> we know that <span class="math inline">\(\vec{q}&#39;=\vec{q}\)</span> is a global minimum of our function.</p>
+<p>Hence we have recovered the second law of thermodynamics for any arbitrary transaction that takes <span class="math inline">\(\vec{q}\)</span> to <span class="math inline">\(\vec{q}&#39;\)</span>!</p>
+</div>
 <div id="thermodynamic-operations" class="section level2">
 <h2>Thermodynamic Operations</h2>
 <p>We can also interpret the market’s prices/probabilities at any given point in time as determining the energy landscape of our system.</p>
@@ -219,17 +244,17 @@ b\cdot (q_i&#39;-q_i)-(C(\vec{q}&#39;)-C(\vec{q}))&amp;=b \cdot \left(q_i&#39;- 
 <p>If the trader carries out the appropriate transaction to adjust the market’s prices to <span class="math inline">\(\text{Pr}_{\text{trader}}\)</span> (by changing the amount of each security sold from <span class="math inline">\(\vec{q}\)</span> to <span class="math inline">\(\vec{q}&#39;\)</span>), then the AMM will believe the change in free energy is: <span class="math display">\[\begin{align*}
 \Delta F_{\text{AMM}}&amp;=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}&#39;))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
 \\
-&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i&#39;}}\right)
+&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right)
 \end{align*}\]</span> and the trader will believe the change in free energy is: <span class="math display">\[\begin{align*}
 \Delta F_{\text{trader}}&amp;=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}&#39;))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \\
-&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i&#39;}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})
+&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})
 \end{align*}\]</span> This is nice because the first quantity tracks with the change in free energy for a system that starts and ends in equilibrium and the second quantity tracks with the change in free energy for a system that starts out of and ends in equilibrium.</p>
 <p>Moreover, we can interpret the discrepancy between the free energies as due to the ‘arbitrage oppurtunity’ arising from the system being out of equilibrium no longer existing for the trader and never having existed for the market.</p>
 <p>Alternatively, suppose our trader waits to adjust the market’s prices to their beliefs and another participant comes along in the mean time and adjusts the market’s prices to <span class="math inline">\(\text{Pr}_{\text{participant}}\)</span> (by changing the amount of each security sold from <span class="math inline">\(\vec{q}\)</span> to <span class="math inline">\(\vec{q}&#39;\)</span>). Then the trader will now believe the change in free energy is: <span class="math display">\[\begin{align*}
 \Delta F_{\text{trader}}&amp;=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}&#39;)) + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}}) \right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \\
-&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i&#39;}}\right)+\left(b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}})-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
+&amp;=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i&#39;/b}}\right)+\left(b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}})-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \end{align*}\]</span> which tracks with the change in free energy for a system that starts and ends out of equilibrium.</p>
 <p>We can summarize the basic process underlying our prediction market as below:</p>
 <p><span class="math display">\[\begin{align*}

@@ -52,7 +52,7 @@ and $C(\vec{q})-C(\vec{0})$ represents how much money agents must give the marke
 $$F_{\text{AMM}}(\vec{q})=-(C(\vec{q})-b\cdot \ln(N))=-b \cdot \ln \frac{\sum_{i=1}^N e^{q_i/b}}{N}=-b\cdot \ln \langle e^{q_i/b} \rangle$$
 This is exactly parallels Jarzynski's equality and suggests we should start drawing some analogies! Note that if we interpret the amount of security $i$ held by the traders as the work performed by the AMM in state $i$, then $F_{\text{AMM}}$ (or the amount of money the market has given out) is identical to the equilibrium free energy in a thermodynamic process. This makes sense since the more money the market gives out, the more its capacity to perform work (have securities bought from it). 
 
-This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by average number of shares sold to the market for each security $i$ since by Jensen's:
+This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by the average number of shares sold to the market for each security $i$ since by Jensen's:
 \begin{align*}
 &\langle e^{q_i/b} \rangle \geq e^{\frac{\sum_{i=1}^N q_i/b}{N}}
 \\
@@ -63,6 +63,46 @@ This also allows us to immediately conclude that the money given out by the mark
 &\to F_{\text{AMM}}(\vec{q}) \leq -\frac{\sum_{i=1}^N q_i}{N}
 \end{align*}
 , giving as a version of the second law of thermodynamics!
+
+## The Second Law For Any Transaction
+
+The above version of the second law only applies for a transaction in which there is intially $\vec{0}$ of each security issued.
+
+In general, if the amount of each security sold changes from $\vec{q}$ to $\vec{q}'$ then the change in free energy of our prediction market (or the amount of money it gives out in the transaction) is:
+
+\begin{align*}
+\Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
+\end{align*}
+
+and the average work performed on the market (or the expected number of paying shares the market bought) is:
+$$\overline{W}=\sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})$$
+We wish to show:
+$$\Delta F_{\text{AMM}} \leq \overline{W}$$
+i.e., the amount of money given out by the market in a transaction is bounded above by the expected number of paying shares the market bought.
+
+This is the case iff:
+\begin{align*}
+& b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right) \leq \sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})
+\\
+& \iff b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right) \leq \sum_{i=1}^N-(q'_i-q_i)\cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}
+\\
+& \iff \frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}} \leq \frac{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
+\\
+& \iff \frac{\sum_{i=1}^N e^{q_i/b}}{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\leq \frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
+\end{align*}
+Indeed, since $\frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}$ is a convex function of $\vec{q}'$ and setting:
+\begin{align*}
+\frac{\partial}{\partial q'_k}\left(\frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\right)&=\frac{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot e^{q'_k/b}-e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot \frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q'_i/b}}{\left(e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}\right)^2}
+\\
+&=\frac{e^{q'_k/b}-\frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q'_i/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}=0
+\end{align*}
+yields:
+$$\frac{e^{q'_k/b}}{\sum_{i} e^{q'_i/b}}=\frac{e^{q_k/b}}{\sum_{i} e^{q_i/b}}$$
+we know that $\vec{q}'=\vec{q}$ is a global minimum of our function.
+
+Hence we have recovered the second law of thermodynamics for any arbitrary transaction that takes $\vec{q}$ to $\vec{q}'$!
 
 ## Thermodynamic Operations
 
@@ -77,13 +117,13 @@ the AMM will believe the change in free energy is:
 \begin{align*}
 \Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
 \\
-&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i'}}\right)
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
 \end{align*}
 and the trader will believe the change in free energy is:
 \begin{align*}
 \Delta F_{\text{trader}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \\
-&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i'}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})
 \end{align*}
 This is nice because the first quantity tracks with the change in free energy for a system that starts and ends in equilibrium and the second quantity tracks with the change in free energy for a system that starts out of and ends in equilibrium. 
 
@@ -93,7 +133,7 @@ Alternatively, suppose our trader waits to adjust the market's prices to their b
 \begin{align*}
 \Delta F_{\text{trader}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}')) + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}}) \right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \\
-&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i}}{\sum_{i=1}^N e^{q_i'}}\right)+\left(b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}})-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)+\left(b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}})-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
 \end{align*}
 which tracks with the change in free energy for a system that starts and ends out of equilibrium.
 
