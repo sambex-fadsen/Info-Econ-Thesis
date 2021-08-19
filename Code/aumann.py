@@ -40,8 +40,8 @@ def posterior(event, chunk, opp_part, opp_chnks):
 
 #Given posterior, event, info partition, opponent's
 #info partition, and opponent's possible chunks
-#Returns possible chunks consistent with
-#reported posterior
+#Returns possible chunks consistent 
+#with reported posterior
 def pssblchnks(post, event, part, opp_part, opp_chnks, oldpssblchnks):
 	chnks=[]
 	for chunk in part:
