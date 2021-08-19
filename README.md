@@ -1,4 +1,4 @@
-# Info-Econ-Thesis
+# Agreement Game Design
 
 The goal of both game 1 and game 2 is to make as much money as possible.
 In a single round:
