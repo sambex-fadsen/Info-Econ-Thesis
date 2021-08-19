@@ -5,7 +5,7 @@ In a single round:
 1. Display both information partitions.
 2. At each turn based on existing reports 
     * Tell agents 
-    ** What their posterior is/which worlds are still plausible
+      * What their posterior is/which worlds are still plausible
     ** What the expected payoff of their previous reports are
     ** What they expect to make on a new report
     * Give them options to report or to leave the game.
