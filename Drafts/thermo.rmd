@@ -50,7 +50,7 @@ $$C(\vec{0})=b\cdot \ln\left(\sum_{i=1}^N e^{0/b}\right)=b \cdot \ln(N)$$
 
 and $C(\vec{q})-C(\vec{0})$ represents how much money agents must give the market for it to issue $\vec{q}$ of each security, the cost function of a Boltzmann AMM indicates how much money agents have given the market in the course of making bets in addition to the market's own funding pool. Therefore, the amount of money the market has given out at any point in time is:
 $$F_{\text{AMM}}(\vec{q})=-(C(\vec{q})-b\cdot \ln(N))=-b \cdot \ln \frac{\sum_{i=1}^N e^{q_i/b}}{N}=-b\cdot \ln \langle e^{q_i/b} \rangle$$
-This is exactly parallels Jarzynski's equality and suggests we should start drawing some analogies! Note that if we interpret the amount of security $i$ held by the traders as the work performed by the AMM in state $i$, then $F_{\text{AMM}}$ (or the amount of money the market has given out) is identical to the equilibrium free energy in a thermodynamic process. This makes sense since the more money the market gives out, the more its capacity to perform work (have securities bought from it). 
+This exactly parallels Jarzynski's equality and suggests we should start drawing some analogies! Note that if we interpret the amount of security $i$ held by the traders as the work performed by the AMM in state $i$, then $F_{\text{AMM}}$ (or the amount of money the market has given out) is identical to the equilibrium free energy in a thermodynamic process. This makes sense since the more money the market gives out, the more its capacity to perform work (have securities bought from it). 
 
 This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by the average number of shares sold to the market for each security $i$ since by Jensen's:
 \begin{align*}
@@ -68,39 +68,34 @@ This also allows us to immediately conclude that the money given out by the mark
 
 The above version of the second law only applies for a transaction in which there is intially $\vec{0}$ of each security issued.
 
-In general, if the amount of each security sold changes from $\vec{q}$ to $\vec{q}'$ then the change in free energy of our prediction market (or the amount of money it gives out in the transaction) is:
+In general, if the amount of each security sold changes from $\vec{q}$ to $\vec{q}'$ then the average work performed on the market (or the expected number of paying shares the market bought) is:
+$$\overline{W}=\sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})=\sum_{i=1}^NW_i\cdot p_i(\vec{q})$$
+
+and the change in free energy of our market (or the amount of money it gives out in the transaction) is:
 
 \begin{align*}
 \Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
 \\
 &=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{(q'_i-q_i)/b}\cdot \frac{e^{q_i/b}}{\sum_{j=1}^N e^{q_j/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right)
 \end{align*}
 
-and the average work performed on the market (or the expected number of paying shares the market bought) is:
-$$\overline{W}=\sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})$$
 We wish to show:
 $$\Delta F_{\text{AMM}} \leq \overline{W}$$
 i.e., the amount of money given out by the market in a transaction is bounded above by the expected number of paying shares the market bought.
 
-This is the case iff:
+Note by Jensen's:
 \begin{align*}
-& b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right) \leq \sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})
+&\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q}) \geq e^{\sum_{i=1}^N -\frac{W_i}{b} \cdot p_i(\vec{q})}
 \\
-& \iff b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right) \leq \sum_{i=1}^N-(q'_i-q_i)\cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}
-\\
-& \iff \frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}} \leq \frac{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
-\\
-& \iff \frac{\sum_{i=1}^N e^{q_i/b}}{e^{q_i/b \cdot  \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\leq \frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}
+& \to \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right) \geq \sum_{i=1}^N -\frac{W_i}{b} \cdot p_i(\vec{q})
+\\ 
+&\to -b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right) \leq \sum_{i=1}^N W_i \cdot p_i(\vec{q})
 \end{align*}
-Indeed, since $\frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}$ is a convex function of $\vec{q}'$ and setting:
-\begin{align*}
-\frac{\partial}{\partial q'_k}\left(\frac{\sum_{i=1}^N e^{q_i'/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}\right)&=\frac{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot e^{q'_k/b}-e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}} \cdot \frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q'_i/b}}{\left(e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}\right)^2}
-\\
-&=\frac{e^{q'_k/b}-\frac{e^{q_k/b}}{\sum_{i}e^{q_i/b}} \cdot \sum_{i}e^{q'_i/b}}{e^{q'_i/b \cdot \frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}}}=0
-\end{align*}
-yields:
-$$\frac{e^{q'_k/b}}{\sum_{i} e^{q'_i/b}}=\frac{e^{q_k/b}}{\sum_{i} e^{q_i/b}}$$
-we know that $\vec{q}'=\vec{q}$ is a global minimum of our function.
+as desired.
 
 Hence we have recovered the second law of thermodynamics for any arbitrary transaction that takes $\vec{q}$ to $\vec{q}'$!
 
