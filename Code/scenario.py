@@ -121,14 +121,18 @@ def check_rtrctv_rgrt(reports):
 			
 
 world=1
-event=[5,10,15,20,25]
+event=[3,6,9]
+num_turns=0
 
 while(True):
-	agent_A=partition(list(range(1,26)))
-	agent_B=partition(list(range(1,26)))
+	agent_A=partition(list(range(1,11)))
+	agent_B=partition(list(range(1,11)))
 	reports=communicate(world,event,agent_A,agent_B)
+	num_turns=len(reports[0])
 	if check_rtrctv_rgrt(reports)==True:
-		break
+		print(num_turns)
+		if num_turns>=4:
+			break
 
 print(agent_A)
 print(agent_B)
