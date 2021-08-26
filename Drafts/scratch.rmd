@@ -1,0 +1,46 @@
+---
+title: "Scratchwork"
+author: "~sambex-fadsen"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Our prices are:
+$$p_i(\vec{q})=\frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}$$
+Our work is:
+$$\overline{W}=\sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})=\sum_{i=1}^NW_i\cdot p_i(\vec{q})$$
+Our change in free energy is:
+\begin{align*}
+\Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{(q'_i-q_i)/b}\cdot \frac{e^{q_i/b}}{\sum_{j=1}^N e^{q_j/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right)
+\end{align*}
+Our dissipated work is:
+$$\sum_{i=1}^NW_i\cdot p_i(\vec{q})-(-b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right))$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
