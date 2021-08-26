@@ -1,0 +1,656 @@
+---
+title: "Prediction Markets"
+author: "Siddharth Namachivayam"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In _The Use of Knowledge in Society_, Hayek argues that the central issue facing contemporary economics
+does not simply consist in figuring out how to optimally allocate a ‘given’ set of resources. Such
+problems are relatively tractable from a mathematical point of view, and the marginalists more or less
+demonstrated the bliss point to be where the “marginal rates of substitution between any two
+commodities” (Hayek 1945) are the same for all consumers. While Hayek acknowledges the significance of this
+insight, he also believes answering the question of effective allocation is functionally useless without
+concrete knowledge of the scarcity which constrains economic welfare in the first place. The truly
+important function of economics then involves determining what resources actually are ‘given’ to society.
+The difficulty in making such a determination stems from the distributed and contradictory nature of
+relevant economic data amongst millions of agents. Thus, for Hayek, the question of how to best
+aggregate this decentralized patchwork of information lies at the heart of ‘the dismal science.’
+
+Hayek proceeds to identify three primary modes of information aggregation: 1) Central planning,
+2) Competition, and 3) Monopoly. Central planning involves “direction of the whole economic system
+according to one unified plan,” (ibid) competition consists of “decentralized planning by many persons,” (ibid) and
+monopoly aims at the “delegation of planning to organized industries” (ibid).
+Importantly, for Hayek, all economic activity consists of planning. But who ought to be doing the planning? The answer, says Hayek,
+depends on the kind of knowledge necessary to carry out the planning in question. Far too often, people
+assume that “scientific knowledge...is the sum of all knowledge” (ibid). This erroneously suggests that the
+direction of all economic activity ought to be left to a small group of technical experts versed in
+operations research who make decisions via a central committee. To the contrary, scientific knowledge of
+‘general rules’ cannot account for “knowledge of the particular circumstances of time and place” (ibid). This
+latter form of knowledge belongs to virtually every economic agent, and in particular, the businessman
+whose occupation demands rapid adaptation to local changes in his environment. However, the
+businessman cannot rely exclusively on local signals to make optimal decisions and requires “further
+information...of the larger economic system” (ibid). Crucially, since the businessman does not require
+knowledge of why a particular resource is more or less difficult to acquire, and only to what extent a
+particular resource is more or less difficult to acquire, it is sufficient to summarize all the data which
+comprise the totality of macroeconomic trends into prices which the businessman can use to gauge in
+what manner he must alter his firm’s activities. In other words, Hayek paints a picture of the market as,
+first and foremost, a mechanism to compress information into prices.
+
+But if one were to design a market tabula rasa to fit the aim of compression, exactly what form should such a price system take? Prediction markets are one example as to what such an idealized information aggregation mechanism might look like. Inspired directly by Hayek's argument in _The Use of Knowledge in Society_, prediction markets attempt to solve the age old problem of aggregating opinions by using the mathematics of information theory to incentivize participants to reveal their beliefs to one another. Namely, the opinions which prediction markets aggregate are opinions on the odds of a specific event occuring (e.g. a candidate winning an election or a startup delivering on its goals). We might reasonably wonder "why use a prediction market instead just taking a straight forward average of everyone's beliefs?" The answer to this question is rather deep and begins with a classic result-- Arrow's impossiblity theorem.
+
+## Arrow's Impossiblity Theorem
+
+We follow the proof of Arrow's impossiblity theorem laid out by Yu 2012 in "A one-shot proof of Arrow's impossiblity theorem."
+
+### 3 Reasonable Demands
+
+Let's start with some definitions. Given $n$ voters $\{x_1,x_2...,x_n\}$ and $m$ candidates $\{y_1,y_2...,y_m\}$, we define $\mathcal{O}$ to be the set of all $m!$ _order preferences_ over our candidates. 
+
+A _preference profile_ is an element $\theta \in \mathcal{O}^n$, where we let $\theta_i$ be the order preference of the $i$th voter. In particular, we write $\theta_i(a) \succ \theta_i(b)$ if voter $x_i$ prefers candidate $y_a$ to candidate $y_b$.
+
+Finally, a _social aggregation function_ is any function $f: \mathcal{O}^n \to \mathcal{O}$ which maps a given preference profile to a unique order preference (you can think of this as our 'voting system').
+
+Now, we are ready to describe the 3 demands we want our social aggregation function $f$ to satisfy. I will define each demand formally and then use plain English to make each one seem reasonable.
+
+First, $f$ satisfies _unanimity_ iff $\forall \theta \in \mathcal{O}^n$:
+$$(\forall i \in [n], \ \theta_i(a) \succ \theta_i(b)) \implies  f(\theta)(a) \succ f(\theta)(b)$$
+This means if each of our voters prefers $y_a$ to $y_b$, then the aggregate preference must also favor $y_a$ to $y_b$.
+
+Second, $f$ satisfies _binary independence_ iff $\forall \theta,\tau \in \mathcal{O}^n$:
+$$(\forall i \in [n], \ \theta_i(a) \succ \theta_i(b) \leftrightarrow \tau_i(a) \succ \tau_j(b)) \implies (f(\theta)(a) \succ f(\theta)(b) \leftrightarrow f(\tau)(a) \succ f(\tau)(b) )$$
+In other words, the aggregate preference between $y_a$ and $y_b$ is uniquely determined by each voter's preference between $y_a$ and $y_b$.
+
+Third, $f$ satisfies _non-dictatorship_ iff:
+$$\neg(\exists i \in [n] \ \text{s.t.} \ \forall \theta \in \mathcal{O}, \ f(\theta)=\theta_i)$$
+That is to say, there does not exist a voter whose order preference is _always_ the aggregate preference.
+
+Hopefully, these demands seem like sensible things to ask from a voting system. If they don't, maybe try convincing yourself that a simple majority rule procedure between two candidates _does_ satisfy them.
+
+Unfortunately, when there are more than $2$ candidates, turns out we're asking for too much...
+
+### Proof of the Theorem
+STAC there exists a social aggregation function $f$ satisfying unanimity, binary independence, and non-dictatorship in an election with more than 2 candidates...
+
+#### Defining Pivots
+Given two candidates $y_a$, $y_b$, we define the _pivot_ from $a$ to $b$ as follows.
+
+Consider a preference profile $\theta^0 \in \mathcal{O}^n$ where $\forall i \in [n]$:
+$$\theta^0_i(a) \succ \theta^0_i(b)$$
+By unanimity, we must have:
+$$f(\theta^0)(a) \succ f(\theta^0)(b)$$
+Now pick $\theta^{k} \in \mathcal{O}^n$ so that $\forall i \in [n]\backslash [k]$:
+$$\theta^{k}_i(a) \succ \theta^{k}_i(b)$$
+but $\forall i \in [k]$:
+$$\theta_i^{k}(a) \prec \theta_i^{k}(b) $$
+In particular, the last preference profile $\theta^n$ will have $\forall i \in [n]$:
+$$\theta^n_i(a) \prec \theta^n_i(b)$$
+Thus by unanimity, we must have:
+$$f(\theta^n)(a) \prec f(\theta^n)(b)$$
+Moreover, we are guarenteed the existence of an integer $b|a \in [n]$ satisfying:
+$$b|a=\min\{k \ | \ f(\theta^k)(a) \prec f(\theta^k)(b) \}$$
+We call the candidate $x_{b|a}$ our "pivot" from $a$ to $b$.  Note $b|a$ is _unique_ despite our particular choice of $\theta^0,\theta^1...,\theta^n$ since $f$ satisfies binary independence. 
+
+Additionally, if $\theta \in \mathcal{O}^n$ is a preference profile so that $\forall i \in [1, b|a)$:
+$$\theta_i(a) \succ \theta_i(b)$$
+and $\forall i \in (b|a,n]$:
+$$\theta_i(a) \prec \theta_i(b)$$
+then by construction:
+$$f(\theta)(b) \succ f(\theta)(a) \iff \theta_{b|a}(b) \succ \theta_{b|a}(a)$$
+
+#### The Power of Pivots
+Let's introduce a third candidate $y_c$ and suppose we have a preference profile $\tau \in \mathcal{O}^n$ so that  $\forall i \in [1, b|a]$:
+$$\tau_i(a) \succ \tau_i(b) \succ \tau_i(c) $$
+, and $\forall i \in (b|a,n]$:
+$$\tau_i(a) \prec \tau_i(c) \prec \tau_i(b)$$
+Since $b|a$ is the pivot from $a$ to $b$, we know that:
+$$f(\tau)(a) \succ f(\tau)(b)$$
+Also by unanimity:
+$$f(\tau)(b) \succ f(\tau)(c)$$
+Thus:
+$$f(\tau)(a) \succ f(\tau)(b) \succ f(\tau)(c)$$
+Now, if voter $x_{b|a}$ switches their order preference so:
+$$\tau_{b|a}(b) \succ \tau_{b|a}(a) \succ \tau_{b|a}(c) $$
+and the rest of the voters arbitrarily shuffle their preferences between $y_b$ and $y_c$, then binary independence implies we still have:
+$$f(\tau)(a) \succ f(\tau)(c)$$
+Moreover, since $b|a$ is the pivot from $a$ to $b$:
+$$f(\tau)(b) \succ f(\tau)(a)$$
+Thus:
+$$f(\tau)(b) \succ f(\tau)(a) \succ f(\tau)(c)$$
+Finally, if all the voters arbitrarily change their ranking of $y_a$, then binary independence implies we still have:
+$$f(\tau)(b)  \succ f(\tau)(c)$$
+Thus, so long as voter $x_{b|a}$ prefers candidate $y_b$ to $y_c$, this dictates $f(\tau)(b) \succ f(\tau)(c)$, _regardless of everyone else's preferences_. 
+
+In other words the pivot from $a$ to $b$ gets to force all candidates (except for $y_a$) below $y_b$ in the aggregate preference if they so chose. Interesting, n’est ce pas? 
+
+#### All Pivots are the Same
+
+Consider a preference profile $\theta \in \mathcal{O}^n$ such that $\forall i \in [1,b|a)$:
+$$\theta_i(b) \succ \theta_i(c)$$
+and $\forall i \in (b|a,n]$:
+$$\theta_i(c) \succ \theta_i(b)$$
+As we saw at the end of the last section, since $\theta_{b|a}(b) \succ \theta_{b|a}(c)$ we must have:
+$$f(\theta)(b) \succ f(\theta)(c)$$
+Thus $b|c \leq b|a$.
+
+Now consider a preference profile $\theta \in \mathcal{O}^n$ such that $\forall i \in [1,b|a)$:
+$$\theta_i(c) \succ \theta_i(b)$$
+and $\forall i \in [b|a,n]$:
+$$\theta_i(b) \succ \theta_i(c)$$
+As we saw at the end of the last section, since $\theta_{b|a}(b) \succ \theta_{b|a}(c)$ we must have:
+$$f(\theta)(b) \succ f(\theta)(c)$$
+Thus $c|b \geq b|a$. Putting this together with the previous inequality:
+$$b|c \leq b|a \leq c|b$$
+By symmetry we have:
+$$c|b \leq c|a \leq b|c$$
+Thus:
+$$b|c=c|b=a|b=b|a=c|a=a|c$$
+Since all pivots are the same, there exists a voter who gets to force each candidate below any other candidate in the aggregate preference. Thus this voter is a dictor, contradicting our assumption that $f$ is non-dictatorial!
+
+## Probabilistic Arrow's Theorem
+
+Now that we've seen Arrow's theorem proper, we are ready to examine a slightly tweaked version which answers why we can't just take a straight forward average of people's beliefs about an event! 
+
+Our proof will follow/combine the results in Mcconway 1981 and Lehrer & Wagner 1983.
+
+Instead of aggregating a group of individuals' preference orders over of set of candidates, we are now going to aggregate their _probability distributions_ over a measurable space $(\Omega, \mathcal{F})$.
+
+We require $\Omega$ contain more than 2 measurable outcomes (this is analagous to having more than $2$ candidates). Also, we will denote the set of all possible measures over $(\Omega, \mathcal{F})$ by $\mathcal{M}$. 
+
+In particular, the probability distributions of our $n$ individuals will be characterized by a _opinion pool_ $\{P_1, P_2, ...P_n\} \in \mathcal{M}^n$. 
+
+A _consensus function_ will be a function $C: \mathcal{M}^n \to \mathcal{M}$ which maps a given opinion pool to a unique probability distribution over $(\Omega, \mathcal{F})$.
+
+Once again, we have three seemingly reasonable demands:
+
+First, $C$ satisfies the _independence preservation property_ (IPP) iff :
+$$(\forall i \in [n], \ P_i(A \cap B)=P_i(A)\cdot P_i(B)) \implies C(P_1,P_2,...P_n)(A\cap B)=C(P_1,P_2,...P_n)(A)\cdot C(P_1,P_2,...P_n)(B)$$
+IPP parallels our previous notion of _unanimity_ in that if each individual thinks events $A$ and $B$ are independent, then the aggregate distribution also treats $A$ and $B$ as independent. 
+
+Second, $C$ satisfies the _strong setwise function property_ (SSFP) iff $\exists G: [0,1]^n \to [0,1]$ such that for any given opinion pool $\{P_1,P_2,...,P_n\}\in \mathcal{M}^n$:
+$$\forall A \in \mathcal{F}, \ C(P_1, P_2, ...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))$$
+SSFP is analagous to _binary independence_ since it implies the aggregate probability of a given event is uniquely determined by the probabilities each individual assigns to that event.
+
+Third, $C$ satisfies _non-dictatorship_ iff:
+$$\neg(\exists i \in [n] \ \text{s.t.} \ \forall \{P_1,P_2,...,P_n\}\in \mathcal{M}^n, \ \forall A \in \mathcal{F}, \ C(P_1,P_2,...P_n)(A)=P_i(A) )$$
+As before, we will proceed by showing IPP + SSFP necessarily violate non-dictatorship.
+
+
+However, we need to first establish a crucial and somewhat surprising lemma...
+
+#### SSFP $\iff$ Consensus is Linear
+
+We claim $C$ satisfies SSFP iff $\exists w_1, w_2,...w_n \in [0,1]$ such that $\sum_{i=1}^n w_i=1$ and for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$,  $\forall A \in \mathcal{F}$:
+$$C(P_1,P_2,...P_n)(A)=G(P_1(A),P_2(A),...P_n(A))=\sum_{i=1}^n w_i \cdot P_i(A)$$
+ 
+**Proof:**
+\
+It trivially follows that linear consensus $\implies$ SSFP so we will only show the other direction.
+
+Consider three disjoint non-empty subsets $A, B, C \in \mathcal{F}$ which partition $\Omega$ (we are guarenteed these exist by the assumption $\Omega$ has more than 2 measurable outcomes).
+
+Let $(a_1,b_1),(a_2,b_2),...(a_n,b_n) \in \mathbb{R}^2_{\geq 0}$ so that $\forall i \in [n], \ a_i+b_i \leq 1$. We construct an opinion pool $\{P'_1, P'_2, ... P'_n\} \in \mathcal{M}^n$ so that:
+\begin{align*}
+&P'_i(A)=a_i
+\\
+&P'_i(B)=b_i
+\\
+&P'_i(C)=1-(a_i+b_i)
+\end{align*}
+By SSFP:
+\begin{align*}
+G(a_1+b_1,a_2+b_2,...a_n+b_n)&=G(P'_1(A)+P'_1(B),P'_2(A)+P'_2(B),...P'_n(A)+P'_n(B))
+\\
+&=G(P'_1(A\cup B),P'_2(A\cup B),...P'_n(A\cup B))
+\\
+&=C(P'_1,P'_2,...P'_n)(A \cup B)
+\\
+&=C(P'_1,P'_2,...P'_n)(A)+C(P'_1,P'_2,...P'_n)(B)
+\\
+&=G(P'_1(A),P'_2(A),...P'_n(A))+G(P'_1(B),P'_2(B),...P'_n(B))
+\\
+&=G(a_1,a_2,...a_n)+G(b_1,b_2,...b_n)
+\end{align*}
+
+In particular, this implies $\forall x=\{x_1,x_2,...x_n\}\in [0,1]^n$:
+\begin{align*}
+G(x_1,x_2,...x_n)=G(x_1,0,...0)+G(0,x_2,...x_n)=\sum_{i=1}^n G(0,...0,x_i,0,...0)
+\end{align*}
+More concisely, if we write $G_i(a)=G(\underbrace{0,...0}_{i-1\ 0's},a,0,...0)$ then:
+$$G(x)=\sum_{i=1}^n G_i(x_i)$$
+Now if $a,b \in [0,1]$ so that $a+b \in [0,1]$, then from before:
+\begin{align*}
+G_i(a+b)&=G(0,...0,a+b,0,...0)
+\\
+&=G(0,...0,a,0,...0)+G(0,...0,b,0,...0)
+\\
+&=G_i(a)+G_i(b)
+\end{align*}
+, i.e. each $G_i$ satisfies the Cauchy functional equation on the unit interval. Note $\forall n \in \mathbb{N}^+$:
+$$G_i(x)=G_i\left(\frac{n}{n}\cdot x\right)=n\cdot G_i\left(\frac{x}{n}\right)$$
+, i.e.
+$$\frac{1}{n}\cdot G_i(x)=G_i\left(\frac{x}{n}\right)$$
+Now if $m\in \mathbb{N}_{\geq 0}$ so that $\frac{m}{n} \in \mathbb{Q}_{\geq 0} \cap [0,1]$ then:
+$$G_i\left(\frac{m}{n}\cdot x\right)=m\cdot G_i\left(\frac{x}{n}\right)=\frac{m}{n}\cdot G_i(x)$$
+Finally $\forall r \in [0,1]$ can pick a rational $q_r \in [0,1]$ arbitrarily close so that $d_r=r-q_r \in [0,\frac{1}{N}]$ for any given $N \in \mathbb{N}$. Note:
+\begin{align*}
+G_i(r)-G_i(1)\cdot r&=G_i(r-q_r+q_r)-G_i(1)\cdot r
+\\
+&=G_i(r-q_r)+G_i(q_r)-G_i(1)\cdot r
+\\
+&=G_i(r-q_r)+(q_r-r)\cdot G_i(1)
+\\
+&=G_i(d_r)-d_r\cdot G_i(1)
+\end{align*}
+We know $\text{Im}(G_i)\subseteq [0,1]$ as its values must be probabilities. Thus $G_i(d_r)\leq \frac{1}{N}$ (otherwise $G_i(N \cdot d_r)=N \cdot G_i(d_r) > 1$) and $G_i(1) \leq 1$. Hence:
+$$|G_i(r)-G_i(1)\cdot r|=|G_i(d_r)-d_r\cdot G_i(1)|\leq |G_i(d_r)|+d_r\cdot|G_i(1)| \leq \frac{2}{N}$$
+Taking the limit as $N \to \infty$ yields:
+$$G_i(r)=G_i(1)\cdot r$$
+Thus $\forall i \in [n]$, $G_i$ is of the form:
+$$G_i(x)=w_i \cdot x$$
+where $w_i \in [0,1]$.
+
+Putting things together, this implies for any given opinion pool $\{P_1,P_2,...P_n\} \in \mathcal{M}^n$, $\forall A \in \mathcal{A}$:
+\begin{align*}
+C(P_1,P_2,...P_n)(A)&=G(P_1(A),P_2(A),...P_n(A))
+\\
+&=\sum_{i=1}^n G_i(P_i(A))
+\\
+&=\sum_{i=1}^n w_i \cdot P_i(A)
+\end{align*}
+
+In particular, when $A=\Omega$ we have:
+$$1=C(P_1,P_2,...P_n)(\Omega)=\sum_{i=1}^n w_i \cdot P_i(\Omega)=\sum_{i=1}^n w_i$$
+as desired. Phew! $\square$
+
+#### IPP + SSFP $\implies$ Dictatorship
+As before, consider three disjoint non-empty subsets $A, B, C \in \mathcal{F}$ which partition $\Omega$. By the above, SSFP implies $\exists w_1,w_2...w_n \in [0,1]$ summing to $1$ so that for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$:
+
+\begin{align*}
+&C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i P_i(A)
+\\
+&C(P_1,P_2,...P_n)(B)=\sum_{i=1}^n w_i P_i(B)
+\\
+&C(P_1,P_2,...P_n)(C)=\sum_{i=1}^n w_i P_i(C)
+\end{align*}
+
+Since not all $w_i$ can be zero we know $\exists k \in [n]$ so that $w_k>0$. We construct an opinion pool $\{P'_1,P'_2,...P'_n\}$ so that:
+$$\left(P'_k(A),\ P'_k(B), P'_k(C)\right)=\left(0,\frac{1}{2},\frac{1}{2} \right)$$
+and $\forall i \in [n] \backslash \{k\}$:
+$$\left(P'_i(A),\ P'_i(B), P'_i(C)\right)=\left(\frac{1}{2},\frac{1}{2},0 \right)$$
+Note:
+\begin{align*}
+&C(P'_1,P'_2,...P'_n)(A)=\frac{1-w_k}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(B)=\frac{1}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(C)=\frac{w_k}{2}
+\end{align*}
+
+Consider the events $S=A \cup B$ and $T=B \cup C$. By the above:
+\begin{align*}
+&C(P'_1,P'_2,...P'_n)(S)=\frac{1-w_k}{2}+\frac{1}{2}=1-\frac{w_k}{2}
+\\
+&C(P'_1,P'_2,...P'_n)(T)=\frac{1}{2}+\frac{w_k}{2}
+\end{align*}
+
+Since $P'_k(S)=P'_k(A)+P'_k(B)=\frac{1}{2}$ and $P'_k(T)=P'_k(B)+P'_k(C)=1$:
+$$P'_k(S \cap T)=P'_k(B)=\frac{1}{2}=\frac{1}{2}\cdot 1=P'_k(S) \cdot P'_k(T)$$
+Additionally, since  $\forall i \in [n] \backslash \{k\}$, $P'_i(S)=P'_i(A)+P'_i(B)=1$ and $P'_i(T)=P'_i(B)+P'_i(C)=\frac{1}{2}$: 
+$$P'_i(S \cap T)=P'_i(B)=\frac{1}{2}=1\cdot \frac{1}{2}=P'_i(S) \cdot P'_i(T)$$
+Thus by IPP, we must have:
+$$C(P'_1,P'_2,...P'_n)(B)=C(P'_1,P'_2,...P'_n)(S \cap T)=C(P'_1,P'_2,...P'_n)(S) \cdot C(P'_1,P'_2,...P'_n)(T)$$
+Hence:
+$$\frac{1}{2}=\left(1-\frac{w_k}{2}\right)\cdot \left(\frac{1}{2}+\frac{w_k}{2}\right)$$
+The only solutions to the above quadratic are $w_k=0$ and $w_k=1$. However, $w_k>0$ by assumption, implying $w_k=1$ and all other $w_i=0$. This means for any given opinion pool $\{P_1,P_2,...P_n\}\in \mathcal{M}^n$, $\forall A \in \mathcal{F}$:
+$$C(P_1,P_2,...P_n)(A)=\sum_{i=1}^n w_i \cdot P_i(A)=P_k(A)$$
+In other words, we have found our dictator! Thus, given more than 2 measurable outcomes, _no_ consensus function can satisfy IPP, SSFP, and non-dictatorship simultaneously.
+
+Given the above impossibility result, how are we then supposed aggregate beliefs surrounding the odds of an event? Note that in our "probabilistic Arrow's theorem", the agents' beliefs are _static_. Thus a clever way to side step the problem of aggregating differing beliefs might be to instead let the agents interact with one another, causing their beliefs to become _dynamic_, and hope they all agree with each other at the end. Indeed, a generalization of Aumann's agreement theorem (which we will now explore) states that this will exactly be the case when two given agents are interacting... 
+
+## Aumann's Agreement Theorem
+
+Aumann's agreement theorem was first articulated within a paper by Robert Aumann titled "Agreeing to Disagree" which asserts that "people with the same priors cannot agree to disagree" (Aumann 1976).
+
+Let $(\Omega, \mathcal{F},\mu)$ be a probability space, and let $Q^a$, $Q^b$ be partitions of $\Omega$ such that $Q^a \lor Q^b$ (the coarsest common refinement) consists of non-null events. 
+
+$(\Omega, \mathcal{F},\mu)$ is our space of states of the world.
+
+$\mu$ is a prior common to agent $a$ and agent $b$.
+
+$Q^a=\{Q^a_1,Q^a_2,...Q^a_K\}$ is the information partition of agent $a$ and $Q^b=\{Q^b_1,Q^b_2,...Q^b_L\}$ is the information partition of agent $b$.
+
+If $\omega \in \Omega$ is the true state of the world then agent $i$ is informed of $Q^i(\omega)$ which is the element of $Q^i$ that contains $\omega$.
+
+An event $E$ is common knowledge if $E$ includes that member of the meet $Q^a \land Q^b$ (the finest common coarsening) which contains $\omega$.
+
+Let $A$ be an event and let $q^i(\omega)=\frac{P(A\cap Q^i(\omega))}{P(Q^i(\omega))}$ be agent $i$'s posterior.
+
+If it is common knowledge at $\omega$ that $q^i(\omega)=q_i$ then let $P(\omega)$ be that member of the meet which contains $\omega$. Note we can write:
+$$P(\omega)=\cup_j\ Q^a_j$$
+where the $Q^a_j \in Q^a$ partition $P(\omega)$. Hence:
+$$\mu(A \ | \ P(\omega))=\frac{\mu(\cup_j\ A \cap Q^a_j)}{\mu(\cup_j\ Q^a_j)}=\frac{\sum_j \mu(Q_j^a) \cdot \mu(A \ | \ Q_j^a)}{\sum_j \mu(Q_j^a) }=\frac{\sum_j \mu(Q_j^a) \cdot q_a}{\sum_j \mu(Q_j^a) }=q_a$$
+by symmetry it also follows that:
+$$\mu(A \ | \ P(\omega))=q_b$$
+
+thus:
+$$q_a=q_b$$
+
+Thus two agents cannot agree (have common knowledge of posteriors) to disagree (which are unequal).
+
+### Bringing Things to Life
+
+We will now examine a generalization of Aumann's theorem by Geanakoplos and Polemarchakis 1982. Continuing with the notation above agents $a$ and $b$ will interact dynamically as follows:
+
+Step $1$-
+Agent $a$ announces their posterior:
+$$q_1^a=\frac{\mu(A \cap Q^a(\omega))}{\mu(Q^a(\omega))}$$, 
+meaning $a$ could be in partitions:
+$$a_1=\{k \ | \ \frac{\mu(A \cap Q^a_k)}{\mu(Q^a_k)}=q_1^a\}$$
+Agent $b$ will then adjust their posterior and announce it as:
+$$q^b_1=\frac{\mu(A \cap (Q^b(\omega) \cap (\cup_{k \in a_1} Q^a_k)))}{\mu(Q^b(\omega) \cap (\cup_{k \in a_1} Q^a_k))}$$
+meaning $b$ could be in partitions:
+$$b_1=\{l \ | \ \frac{\mu(A \cap (Q^b_l \cap (\cup_{k \in a_1} Q^a_k)))}{\mu(Q^b_l \cap (\cup_{k \in a_1} Q^a_k))}=q_1^b\}$$
+
+Step $t$- 
+Agent $a$ will then adjust their posterior and announce it as:
+$$q_t^a=\frac{\mu(A \cap (Q^a(\omega) \cap (\cup_{l \in b_{t-1}} Q^b_l)))}{\mu(Q^a(\omega) \cap (\cup_{l \in b_{t-1}} Q^b_l))}$$, 
+meaning $a$ could be in partitions:
+$$a_t=\{k \in a_{t-1} \ | \ \frac{\mu(A \cap (Q^a_k \cap (\cup_{l \in b_{t-1}} Q^b_l)))}{\mu(Q^a_k \cap (\cup_{l \in b_{t-1}} Q^b_l))}=q_t^a\}$$
+Agent $b$ will then adjust their posterior and announce it as:
+$$q^b_t=\frac{\mu(A \cap (Q^b(\omega) \cap (\cup_{k \in a_t} Q^a_k)))}{\mu(Q^b(\omega) \cap (\cup_{k \in a_{t}} Q^a_k))}$$
+meaning $b$ could be in partitions:
+$$b_t=\{l \in b_{t-1} \ | \ \frac{\mu(A \cap (Q^b_l \cap (\cup_{k \in a_t} Q^a_k)))}{\mu(Q^b_l \cap (\cup_{k \in a_t} Q^a_k))}=q_t^b\}$$
+Importantly note that $q^a_t$ is a function of $b_{t-1}$, $a_t$ is a function of $a_{t-1}$, $b_{t-1}$ and $q^a_t$, and $q^b_t$ is a function of $a_t$. Thus if $a_t=a_{t-1}$ and $b_t=b_{t-1}$ then $q^{a}_{t+1}=q^{a}_t$, $a_{t+1}=a_t$ and $q^b_{t+1}=q^b_t$. Since $b_t$ is a function of $b_{t-1}$, $a_{t}$, and $q^b_t$, it also follows that $b_{t+1}=b_t$. In other words, if $a_t=a_{t-1}$ and $b_t=b_{t-1}$  then our agents have reached a communication equilibrium.
+
+Moreover, since $\forall i \in \mathbb{N}$,  $(a_{i} \supseteq a_{i+1}) \land (b_{i} \supseteq b_{i+1)}$ and $\max |a_1|=K$ and $\max |b_1|=L$, we know $\exists j \in [K+L]$ s.t.:
+$$(a_{j}=a_{j+1}) \land (b_{j}=b_{j+1}) $$
+Thus we are guaranteed convergence.
+
+To illustrate the point consider the following example where $(\Omega,\mathcal{F},\mu)=([8],2^{[8]},\#)$, $\omega=1$ and:
+\begin{align*}
+Q^a&=\{\{1,2,3,4,6\},\{5,7,8\}\}
+\\
+Q^b&=\{\{1,3,5,7\},\{2,4,6,8\}\}
+\end{align*}
+Additionally, suppose the event being communicated about is $A=\{3,4\}$. 
+
+Initially, $a$ will report a posterior of $\frac{2}{5}$. Then, $b$ will realize $a$ must be in the partition $\{1,2,3,4,5,6\}$ and the only possible true states of the world are $\{1,3\}$. Thus $b$ will report a posterior of $\frac{1}{2}$. Next, $a$ will realize $b$ must have been in the partition $\{1,3,5,7\}$ since otherwise $b$ would have reported a posterior of $\frac{1}{3}$. Subsequently, $a$ will also report a posterior of $\frac{1}{2}$ and a communication equilibrium will be reached since each agent knows the partition of the other.
+
+Just for fun, what would have occurred if $b$ started? Well the initial posterior reported would be $\frac{1}{4}$. Since to $a$, this probability is consistent with both of $b$'s partitions, $a$ will still think $\{1,2,3,4,6\}$ are the possible true states of the world. Thus $a$ will report a posterior of $\frac{2}{5}$ and the process proceeds as outlined above.
+
+Odd that our agents posteriors converged to the same thing no? 
+
+Suppose at some step at some step we have $a_{t+1}=a_{t}$ and $b_{t+1}=b_{t}$ (as we are guaranteed). Since $\forall k \in a_{t+1}=a_t$:
+$$\mu(A \cap \left(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)=q_{t+1}^a \cdot \mu(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )$$
+and $\forall l \in b_{t+1}=b_t$:
+$$\mu(A \cap \left(Q^b_l \cap \left(\cup_{k \in a_{t}} Q^a_k\right) \right)=q_{t+1}^b \cdot \mu(Q^b_l \cap \left(\cup_{k \in a_{_t}} Q^a_k\right) )$$
+we have:
+$$\sum_{k\in a_t}\mu(A \cap \left(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)=q_{t+1}^a \cdot \sum_{k \in a_t}\mu(Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )$$
+and:
+$$\sum_{l \in b_t} \mu(A \cap \left(Q^b_l \cap \left(\cup_{k \in a_{t}} Q^a_k\right) \right)=q_{t+1}^b \cdot \sum_{l \in b_t}\mu(Q^b_l \cap \left(\cup_{k \in a_{_t}} Q^a_k\right) )$$
+Hence:
+$$\frac{\mu(A \cap \left(\cup_{k \in a_t}Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) \right)}{\mu(\cup_{k \in a_t} Q^a_k \cap \left(\cup_{l \in b_t} Q^b_l\right) )}=\frac{\mu(A \cap (\cup_{k \in a_t} \cup_{l \in b_t} Q^a_k \cap Q^b_l) )}{\mu(\cup_{k \in a_t} \cup_{l \in b_t} Q^a_k \cap Q^b_l)}=q^a_{t+1}$$
+and:
+$$\frac{\mu(A \cap \left(\cup_{l \in b_t}Q^b_l \cap \left(\cup_{k \in a_t} Q^a_k\right) \right)}{\mu(\cup_{l \in b_t} Q^b_l \cap \left(\cup_{k \in a_t} Q^a_k\right) )}=\frac{\mu(A \cap (\cup_{l \in b_t} \cup_{k \in a_t} Q^b_l \cap Q^a_k) )}{\mu(\cup_{l \in b_t} \cup_{k \in a_t} Q^b_l \cap Q^a_k)}=q^b_{t+1}$$
+, i.e. $q^a_{t+1}=q^b_{t+1}$
+
+### Common Knowledge Will Equilibriate
+Suppose the posteriors of agents $a$ and $b$ are common knowledge in world $\omega$.
+
+Since agent $b$ knows $a$'s initial posteriors, when $a$ announces their posteriors, $b$ already knows this posterior from their current partition. Thus $b$ will just report their initial posteriors. 
+
+Since $a$ knows $b$ knows $a$'s posteriors, every element of $a$'s partition already indicated the announcement would not eliminate anything from $b$'s initial partition.
+
+Additionally, since $a$ knows $b$'s initial posteriors, $a$'s current partition already contains all relevant information. Thus $a$ will just report their initial posteriors.
+
+Since $b$ knows $a$ knows $b$ knows $a$'s posteriors and $b$ knows $a$ knows $b$'s posteriors, every element of $b$'s partition already indicated the announcement would not eliminate anything from $a$'s initial partition.
+
+Additionally, since $b$ knows $a$'s initial posteriors, $b$'s current partition already contains all relevant information. Thus $b$ will just report their initial posteriors.
+
+Through symmetry, we can continue this process identically ad infinitum.
+
+Thus, if the agents' posteriors are common knowledge at $\omega$, then agents $a$ and $b$ can't disagree forever!
+
+## Prediction Markets
+
+Now that we are heuristically justified in adopting a dynamic approach to aggregation, we are finally ready to see the technology which drives this dynamic-- prediction markets! Note that all we need is a mechanism to incentivize traders to report true beliefs and we are good to go since the traders will accordingly change their minds upon listening to one another and submit new reports...
+
+### Scoring Rules
+
+Our description of prediction market's follows that laid out by Hanson 2002.
+
+To begin with, the common approach used in belief elicitation for a single individual is to use a _scoring rule_. Let our subject's probability distribution over a disjoint partition of states $\{1,2,...N\}$ be represented by the vector $\vec{p}$. If their report is represented by $\vec{r}$ then a scoring rule $s$ awards the subject $s_i(\vec{r})$ dollars in case of event $i$. A _proper_ scoring rule satisfies:
+$$\vec{p}=\text{argmax}\ \mathbb{E}[s(\vec{r})]=\text{argmax} \sum_{i=1}^N \vec{p}_i\cdot s_i(\vec{r})$$
+and:
+$$\mathbb{E}[s(\vec{p})]=\sum p_i\cdot s_i(\vec{p}) \geq 0$$
+for any $\vec{p}$. These constraints together imply that a subject has incentive to report their true probability distribution when paid out according to the scoring rule $s$.
+
+The most natural/common proper scoring rule is the logarithmic scoring rule of the form:
+$$a_i+b\cdot \ln(r_i)$$
+
+To see why this scoring rule is proper note $a_i$ and $b$ can be set so that the agent's expected reward for telling the truth is non-negative and:
+\begin{align*}
+\text{argmax} \sum_{i=1}^N p_i\cdot s_i(\vec{r})&=\text{argmax} \sum_{i=1}^N p_i\cdot (a_i+b\ln(r_i))
+\\
+&=\text{argmax} \sum_{i=1}^N p_i \cdot a_i + \sum_{i=1}^N p_i\cdot b \ln(r_i)
+\\
+&=\text{argmax}\ b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ -b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ b\sum_{i=1}^N p_i\cdot \ln(p_i)-b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ b\sum_{i=1}^N p_i\cdot \ln\left(\frac{p_i}{r_i}\right)
+\\
+&=\text{argmin} \ b\cdot KL(\vec{p} \ ||\ \vec{r})
+\\
+&=\vec{p}
+\end{align*}
+
+### Market Scoring Rules
+
+How do we go about eliciting the beliefs of _multiple_ traders? Hypothetically, we could simply use a seperate scoring rule for each individual. However, this is expensive. Alternatively, in a market scoring rule, the market makes some initial default report and whenever a future trader submits a new report, they always agree to pay the award of the report last submitted. Thus, given that the $n$th report was $r^n$ the person who submits the $n+1$th report expects to make:
+$$s_i(r^{n+1})-s_i(r^{n})$$
+in case of event $i$. This person also has incentive to report their true beliefs since $s_i(r^n)$ is given and thus their decision ought to simply maximize $\mathbb{E}[s(r^{n+1})]$. 
+
+The 0th trader is the market, so if there are $N$ reports submitted, the market only need pay out:
+$$\sum_{i=1}^{N} s_i(r^i)-s_i(r^{i-1})=s_i(r^N)-s_i(r^0)$$ 
+in case of event $i$.
+
+If we use a _logarithmic_ market scoring rule (LMSR) each person expects to make:
+$$b \cdot \ln\left(\frac{r^{n+1}_i}{r^n_i}\right)$$
+in case of event $i$ and:
+$$\sum_{i=1}^kb \cdot r^{n+1}_i\ln\left(\frac{r^{n+1}_i}{r^n_i}\right)=b \cdot KL(r^{n+1} \ || \ r^n)$$
+overall. That is to say, each trader in a prediction market using a LMSR expects to profit proportional to the surprisal between their report and the report before them.
+
+Moreover, if the market starts with an initial report that is uniform over all $k$ outcomes, then worst case scenario it will need to pay out:
+$$b \cdot\left(\frac{1}{1/N}\right)=b\cdot \ln(N)$$
+which can be thought of as the subsidy necessary to run the market.
+
+### Reneging
+
+The logarithmic market scoring rule provides us with a tool which creates incentives for agents to tell us the truth during each step of the process in Aumann's agreement theorem. However, consider two agents interacting via a LMSR using the example where $\omega=1$,:
+\begin{align*}
+Q^a&=\{\{1,2,3,4,6\},\{5,7,8\}\}
+\\
+Q^b&=\{\{1,3,5,7\},\{2,4,6,8\}\}
+\end{align*}
+, and $A=\{3,4\}$. 
+
+Suppose the market's default estimate is $\mu(A)=\frac{1}{2}$ and $\mu(\neg A)=\frac{1}{2}$
+
+If agent $a$ were to start then $q^a_1=\frac{2}{5}$, $q^b_1=\frac{1}{2}$, and $q^a_2=\frac{1}{2}$. In this case, after adjusting their initial prior, agent $a$ would expect to make an amount proportional to:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{2/5}{1/2}\right)+\ln\left(\frac{3/5}{1/2}\right)\right)\approx -0.0204$$
+on their first report (i.e. lose money)!
+
+If agent $b$ were to start then $q^b_1=\frac{1}{4}$, $q^a_1=\frac{2}{5}$, and $q^b_1=\frac{1}{2}$. Hence, agent $b$ will eventually expect to lose money on their first report as well since:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{1/4}{1/2}\right)+\ln\left(\frac{3/4}{1/2}\right)\right)\approx -0.1438$$
+This is no good! Both agents might refuse to participate if they think there is a chance they lose money a report. We can however bypass this issue if we slightly modify the LMSR, in the manner outlined below.
+
+When an agent submits a report, they no longer agree to pay the reward of only the prediction before them. Rather, they agree to pay the reward of _some_ prediction submitted before them. Firstly, this maintains the incentive to submit predictions since an agent expects to make money if the prediction they pay is different from theirs and lose nothing if it is identical. Secondly, this allows agents who change their beliefs to safely _renege_ (or withdraw) prior reports. Thus, we can quell agent's fears about retroactively expecting to lose money by announcing their predictions!
+
+## Thermodynamics and Prediction Markets
+
+Intuitively, it isn't all too surprising that there is a deep connection between prediction markets and thermodynamics given the logarithmic market scoring rule's relationship to information theory. However, to see the full extent of the connection we will need discuss an alternative way of running prediction markets...
+
+### Automated Market Makers
+
+Automated market makers (AMM's) are an elegant technology that exploit the duality between prices and probabilities to run prediction markets (Chen and Vaughan 2010).
+
+Given a disjoint partition of outcomes $\{1,2,...,N\}$ for some event, an AMM buys and sells securities corresponding to each outcome $i$ of the form "pays \$1 if $i$ occurs." Let $\vec{q}$ be the vector whose $i$th entry represents the number of shares of security $i$ held by the traders. Since the point of an AMM is to easily interpret prices as probabilities, we want security $i$'s price to increase if $q_i$ increases (the traders purchase some amount of security $i$) and decrease if $q_i$ decreases (the traders sell some amount of security $i$). However, this means that the price of a security must change for each infinitesimal amount of its shares that are bought or sold. Thus, prediction markets must use a 'cost function' $C$ to dictate how much an traders will have to pay for a specific transaction given the market's current state. For instance, if the market's participants currently hold $q_i$ of each security collectively and a trader wishes to now transact $r_i$ shares of each security, then this action would cost them:
+$$C(\vec{q}+\vec{r})-C(\vec{q})$$
+Note if we parameterize the path from $\vec{q}$ to $\vec{q}+\vec{r}$ by some function $a(t)$, then the price of security $i$ at each point along the transaction is given by:
+$$p_i(a(t))=\frac{\partial C}{\partial a_i}$$
+There are many different cost functions which can be used to run a prediction market, however the cost function:
+$$C(\vec{q})=b\cdot \ln \sum_{i=1}^N e^{q_i/b}$$
+is particularly nice since its prices are of the form:
+$$p_i(\vec{q})=\frac{e^{q_i/b}}{\sum_{i=1}^N e^{q_i/b}}$$
+, i.e. the Boltzmann distribution!
+
+The Boltzmann AMM is equivalent to a LMSR since if the market's current probabilties are given by the above vector of prices and a trader wishes to change them to:
+$$p_i(\vec{q}')=\frac{e^{q_i'/b}}{\sum_{i=1}^N e^{q_i'/b}}$$
+then in case of event $i$ they will make:
+\begin{align*}
+b\cdot (q_i'-q_i)-(C(\vec{q}')-C(\vec{q}))&=b \cdot \left(q_i'- \ln \sum_{i=1}^N e^{q_i'/b}\right)-b\cdot \left(q_i- \ln \sum_{i=1}^N e^{q_i/b}\right)
+\\
+&=b \cdot \ln\left(\frac{e^{q_i'}}{\sum_{i=1}^N e^{q_i'/b}}\right)-b \cdot \ln\left(\frac{e^{q_i}}{\sum_{i=1}^N e^{q_i/b}}\right)
+\\
+&=b \cdot \ln\left(\frac{p_i(\vec{q}')}{p_i(\vec{q})}\right)
+\end{align*}
+
+That is to say, their expected payoff is:
+$$b \sum_{i=1}^N p_i(\vec{q}') \cdot \ln\left(\frac{p_i(\vec{q}')}{p_i(\vec{q})}\right)=b \cdot KL(p(\vec{q}') \ || \ p(\vec{q}))$$
+
+### Jarzynski's Equality and The Second Law
+Now that we have established the Boltzmann AMM is equivalent to a LMSR, it follows the maximum amount of money the market must pay out to its participants is:
+$$b \cdot \ln(N)$$
+which can be thought of as the subsidy the market uses for its own funding pool.
+
+Additionally since:
+$$C(\vec{0})=b\cdot \ln\left(\sum_{i=1}^N e^{0/b}\right)=b \cdot \ln(N)$$
+
+and $C(\vec{q})-C(\vec{0})$ represents how much money agents must give the market for it to issue $\vec{q}$ of each security, the cost function of a Boltzmann AMM indicates how much money agents have given the market in the course of making bets in addition to the market's own funding pool. Therefore, the amount of money the market has given out at any point in time is:
+$$F_{\text{AMM}}(\vec{q})=-(C(\vec{q})-b\cdot \ln(N))=-b \cdot \ln \frac{\sum_{i=1}^N e^{q_i/b}}{N}=-b\cdot \ln \langle e^{q_i/b} \rangle$$
+This exactly parallels Jarzynski's equality and suggests we should start drawing some analogies! Note that if we interpret the amount of security $i$ held by the traders as the work performed by the AMM in state $i$, then $F_{\text{AMM}}$ (or the amount of money the market has given out) is identical to the equilibrium free energy in a thermodynamic process. This makes sense since the more money the market gives out, the more its capacity to perform work (have securities bought from it). 
+
+This also allows us to immediately conclude that the money given out by the market at any given point in time is bounded above by the average number of shares sold to the market for each security $i$ since by Jensen's:
+\begin{align*}
+&\langle e^{q_i/b} \rangle \geq e^{\frac{\sum_{i=1}^N q_i/b}{N}}
+\\
+&\to \ln \langle e^{q_i/b} \rangle \geq \frac{\sum_{i=1}^N q_i/b}{N}
+\\
+&\to -b\cdot \ln \langle e^{q_i/b} \rangle \leq -\frac{\sum_{i=1}^N q_i}{N}
+\\
+&\to F_{\text{AMM}}(\vec{q}) \leq -\frac{\sum_{i=1}^N q_i}{N}
+\end{align*}
+, giving as a version of the second law of thermodynamics!
+
+### The Second Law For Any Transaction
+
+The above version of the second law only applies for a transaction in which there is intially $\vec{0}$ of each security issued.
+
+In general, if the amount of each security sold changes from $\vec{q}$ to $\vec{q}'$ then the average work performed on the market (or the expected number of paying shares the market bought) is:
+$$\overline{W}=\sum_{i=1}^N-(q'_i-q_i)\cdot p_i(\vec{q})=\sum_{i=1}^NW_i\cdot p_i(\vec{q})$$
+
+and the change in free energy of our market (or the amount of money it gives out in the transaction) is:
+
+\begin{align*}
+\Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{(q'_i-q_i)/b}\cdot \frac{e^{q_i/b}}{\sum_{j=1}^N e^{q_j/b}}\right)
+\\
+&=-b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right)
+\end{align*}
+
+We wish to show:
+$$\Delta F_{\text{AMM}} \leq \overline{W}$$
+i.e., the amount of money given out by the market in a transaction is bounded above by the expected number of paying shares the market bought.
+
+Note by Jensen's:
+\begin{align*}
+&\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q}) \geq e^{\sum_{i=1}^N -\frac{W_i}{b} \cdot p_i(\vec{q})}
+\\
+& \to \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right) \geq \sum_{i=1}^N -\frac{W_i}{b} \cdot p_i(\vec{q})
+\\ 
+&\to -b \cdot \ln\left(\sum_{i=1}^N e^{-W_i/b}\cdot p_i(\vec{q})\right) \leq \sum_{i=1}^N W_i \cdot p_i(\vec{q})
+\end{align*}
+as desired.
+
+Hence we have recovered the second law of thermodynamics for any arbitrary transaction that takes $\vec{q}$ to $\vec{q}'$!
+
+### Thermodynamic Operations
+
+We can also interpret the market's prices/probabilities at any given point in time as determining the energy landscape of our system.
+
+If a trader's beliefs Pr$_{\text{trader}}$ disagrees with the current probability distribution given by the AMM's prices Pr$_{\text{AMM}}$ then according to their coarse graining the free energy is:
+$$F_{\text{trader}}=-b\cdot \ln \langle e^{q_i/b} \rangle+b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$$
+, i.e. they believe the market has given out $b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})$ more dollars than the market believes. This strengthens our analogy since this expression is identical to that of the non-equilibrium free energy in a thermodynamic system.
+
+If the trader carries out the appropriate transaction to adjust the market's prices to $\text{Pr}_{\text{trader}}$ (by changing the amount of each security sold from $\vec{q}$ to $\vec{q}'$), then
+the AMM will believe the change in free energy is:
+\begin{align*}
+\Delta F_{\text{AMM}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)
+\end{align*}
+and the trader will believe the change in free energy is:
+\begin{align*}
+\Delta F_{\text{trader}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}'))\right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})
+\end{align*}
+This is nice because the first quantity tracks with the change in free energy for a system that starts and ends in equilibrium and the second quantity tracks with the change in free energy for a system that starts out of and ends in equilibrium. 
+
+Moreover, we can interpret the discrepancy between the free energies as due to the 'arbitrage oppurtunity' arising from the system being out of equilibrium no longer existing for the trader and never having existed for the market. 
+
+Alternatively, suppose our trader waits to adjust the market's prices to their beliefs and another participant comes along in the mean time and adjusts the market's prices to $\text{Pr}_{\text{participant}}$ (by changing the amount of each security sold from $\vec{q}$ to $\vec{q}'$). Then the trader will now believe the change in free energy is:
+\begin{align*}
+\Delta F_{\text{trader}}&=\left(-b\cdot \ln \langle e^{q_i/b} \rangle+(C(\vec{q})-C(\vec{q}')) + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}}) \right)-\left(-b\cdot \ln \langle e^{q_i/b} \rangle + b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
+\\
+&=b \cdot \ln\left(\frac{\sum_{i=1}^N e^{q_i/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)+\left(b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{participant}})-b \cdot KL(\text{Pr}_{\text{trader}} \ || \ \text{Pr}_{\text{AMM}})\right)
+\end{align*}
+which tracks with the change in free energy for a system that starts and ends out of equilibrium.
+
+
+Thus, we can summarize the basic process underlying prediction markets as below:
+\begin{align*}
+&\to \text{[Initial market/landscape has certain amount of free energy corresponding to } \vec{q}\text{]}
+\\
+&\to \text{[Trader carries out transaction/performs work to profit from extra non-equilibrium free energy]}
+\\
+&\to \text{[Adjustment shifts market/landscape so that free energy corresponds to new }\vec{q}'\text{]}
+\\
+&\to \text{[Rinse and repeat]}
+\end{align*}
+
+## Conclusion
+
+Prediction markets are a powerful tool for aggregating opinions which in a sense bypass an Arrow-esque impossibility result. The justification for their use is largely heuristic, but empirical evidence demonstrates that they perform quite well in making forecasts. There is potentially room for improvement in the liquidity of these markets which is yet to be explored as described in the section on renegeing. The best way to gauge whether allowing renegeing will actually improve market performance will be through controlled expirements which I plan on carrying out during the coming year. Additionally, prediction markets have deep connections to information theory and non-equilibrium statistical mechanics, many of which I believe I have demonstrated for the first time above. In particular, viewing the money given out by the market as the free energy of our system turns out to be an extremely fruitful analogy ripe for many other future developments.
+
+## Works Cited
+
+Hayek, F. 1945. The Use of Knowledge in Society. _The American Economic Review_, 35 (4).
+
+Yu, N. 2012. A one-shot proof of Arrow's impossibility theorem. _Economic theory_, 50 (2).
+
+Mcconway, K. 1981. Marginalization and Linear Opinion Pools. _Journal of the American Statistical Association_, 76 (374).
+
+Lehrer, K., Wagner, C. 1983. Probabililty Amalgamation and the Independence Issue: A Reply to Laddaga. _Synthese_, 55 (3).
+
+Aumann, R. 1976. Agreeing to Disagree. _The Annals of Statistics_, 4 (6).
+
+Geanakoplos, J., Polemarchakis, H. 1982. We Can't Disagree Forever. _Journal of Economic Theory_, 28.
+
+Hanson, R. 2003. Logarithmic Market Scoring Rules for Modular Combinatorial Information Aggregation. _The Journal of Prediction Markets_, 1 (1).
+
+Chen, Y., Vaughan, J. 2010. A New Understanding of Prediction Markets Via No-Regret Learning. _Eleventh ACM Conference on Electronic Commerce_.
