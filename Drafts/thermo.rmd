@@ -30,9 +30,9 @@ The Boltzmann AMM is equivalent to a LMSR since if the market's current probabil
 $$p_i(\vec{q}')=\frac{e^{q_i'/b}}{\sum_{i=1}^N e^{q_i'/b}}$$
 then in case of event $i$ they will make:
 \begin{align*}
-b\cdot (q_i'-q_i)-(C(\vec{q}')-C(\vec{q}))&=b \cdot \left(q_i'- \ln \sum_{i=1}^N e^{q_i'/b}\right)-b\cdot \left(q_i- \ln \sum_{i=1}^N e^{q_i/b}\right)
+(q_i'-q_i)-(C(\vec{q}')-C(\vec{q}))&=b \cdot \left(\frac{q_i'}{b}- \ln \sum_{i=1}^N e^{q_i'/b}\right)-b\cdot \left(\frac{q_i}{b}- \ln \sum_{i=1}^N e^{q_i/b}\right)
 \\
-&=b \cdot \ln\left(\frac{e^{q_i'}}{\sum_{i=1}^N e^{q_i'/b}}\right)-b \cdot \ln\left(\frac{e^{q_i}}{\sum_{i=1}^N e^{q_i/b}}\right)
+&=b \cdot \ln\left(\frac{e^{q_i'/b}}{\sum_{i=1}^N e^{q_i'/b}}\right)-b \cdot \ln\left(\frac{e^{q_i}/b}{\sum_{i=1}^N e^{q_i/b}}\right)
 \\
 &=b \cdot \ln\left(\frac{p_i(\vec{q}')}{p_i(\vec{q})}\right)
 \end{align*}
@@ -41,6 +41,7 @@ That is to say, their expected payoff is:
 $$b \sum_{i=1}^N p_i(\vec{q}') \cdot \ln\left(\frac{p_i(\vec{q}')}{p_i(\vec{q})}\right)=b \cdot KL(p(\vec{q}') \ || \ p(\vec{q}))$$
 
 ## Jarzynski's Equality and The Second Law
+
 Now that we have established the Boltzmann AMM is equivalent to a LMSR, it follows the maximum amount of money the market must pay out to its participants is:
 $$b \cdot \ln(N)$$
 which can be thought of as the subsidy the market uses for its own funding pool.
