@@ -1,0 +1,87 @@
+---
+title: "Prediction Markets"
+author: "~sambex-fadsen"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Now that we are heuristically justified in adopting a dynamic approach to aggregation, we are finally ready to see the technology which drives this dynamic-- prediction markets! Note that all we need is a mechanism to incentivize traders to report true beliefs and we are good to go since the traders will accordingly change their minds upon listening to one another and submit new reports...
+
+## Scoring Rules
+
+Our description of prediction market's follows that laid out by Hanson 2002.
+
+To begin with, the common approach used in belief elicitation for a single individual is to use a \emph{scoring rule}. Let our subject's probability distribution over a disjoint partition of states $\{1,2,...N\}$ be represented by the vector $\vec{p}$. If their report is represented by $\vec{r}$ then a scoring rule $s$ awards the subject $s_i(\vec{r})$ dollars in case of event $i$. A \emph{proper} scoring rule satisfies:
+$$\vec{p}=\text{argmax}\ \mathbb{E}[s(\vec{r})]=\text{argmax} \sum_{i=1}^N \vec{p}_i\cdot s_i(\vec{r})$$
+and:
+$$\mathbb{E}[s(\vec{p})]=\sum p_i\cdot s_i(\vec{p}) \geq 0$$
+for any $\vec{p}$. These constraints together imply that a subject has incentive to report their true probability distribution when paid out according to the scoring rule $s$.
+
+The most natural/common proper scoring rule is the logarithmic scoring rule of the form:
+$$a_i+b\cdot \ln(r_i)$$
+
+To see why this scoring rule is proper note $a_i$ and $b$ can be set so that the agent's expected reward for telling the truth is non-negative and:
+\begin{align*}
+\text{argmax} \sum_{i=1}^N p_i\cdot s_i(\vec{r})&=\text{argmax} \sum_{i=1}^N p_i\cdot (a_i+b\ln(r_i))
+\\
+&=\text{argmax} \sum_{i=1}^N p_i \cdot a_i + \sum_{i=1}^N p_i\cdot b \ln(r_i)
+\\
+&=\text{argmax}\ b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ -b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ b\sum_{i=1}^N p_i\cdot \ln(p_i)-b\sum_{i=1}^N p_i\cdot \ln(r_i)
+\\
+&=\text{argmin} \ b\sum_{i=1}^N p_i\cdot \ln\left(\frac{p_i}{r_i}\right)
+\\
+&=\text{argmin} \ b\cdot KL(\vec{p} \ ||\ \vec{r})
+\\
+&=\vec{p}
+\end{align*}
+
+## Market Scoring Rules
+
+How do we go about eliciting the beliefs of \emph{multiple traders}? Hypothetically, we could simply use a separate scoring rule for each individual. However, this is expensive. Alternatively, in a market scoring rule, the market makes some initial default report and whenever a future trader submits a new report, they always agree to pay the award of the report last submitted. Thus, given that the $n$th report was $r^n$ the person who submits the $n+1$th report expects to make:
+$$s_i(r^{n+1})-s_i(r^{n})$$
+in case of event $i$. This person also has incentive to report their true beliefs since $s_i(r^n)$ is given and thus their decision ought to simply maximize $\mathbb{E}[s(r^{n+1})]$. 
+
+The 0th trader is the market, so if there are $N$ reports submitted, the market only need pay out:
+$$\sum_{i=1}^{N} s_i(r^i)-s_i(r^{i-1})=s_i(r^N)-s_i(r^0)$$ 
+in case of event $i$.
+
+If we use a \emph{logarithmic} market scoring rule (LMSR) each person expects to make:
+$$b \cdot \ln\left(\frac{r^{n+1}_i}{r^n_i}\right)$$
+in case of event $i$ and:
+$$\sum_{i=1}^kb \cdot r^{n+1}_i\ln\left(\frac{r^{n+1}_i}{r^n_i}\right)=b \cdot KL(r^{n+1} \ || \ r^n)$$
+overall. That is to say, each trader in a prediction market using a LMSR expects to profit proportional to the surprisal between their report and the report before them.
+
+Moreover, if the market starts with an initial report that is uniform over all $k$ outcomes, then worst case scenario it will need to pay out:
+$$\max s_i(r^f)-s_i(r^0)=\max b\cdot\left(\ln(r_i^f)-\ln\left(\frac{1}{N}\right)\right)=\max b \cdot\ln\left(\frac{r_i^f}{1/N}\right)=b\cdot \ln(N)$$
+which can be thought of as the subsidy necessary to run the market.
+
+## Reneging
+
+The logarithmic market scoring rule provides us with a tool which creates incentives for agents to tell us the truth during each step of the process in Aumann's agreement theorem. However, consider two agents interacting via a LMSR using the example where $\omega=1$,:
+\begin{align*}
+Q^a&=\{\{1,2,3,4,6\},\{5,7,8\}\}
+\\
+Q^b&=\{\{1,3,5,7\},\{2,4,6,8\}\}
+\end{align*}
+, and $A=\{3,4\}$. 
+
+Suppose the market's default estimate is $\mu(A)=\frac{1}{2}$ and $\mu(\neg A)=\frac{1}{2}$
+
+If agent $a$ were to start then $q^a_1=\frac{2}{5}$, $q^b_1=\frac{1}{2}$, and $q^a_2=\frac{1}{2}$. In this case, after adjusting their initial prior, agent $a$ would expect to make an amount proportional to:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{2/5}{1/2}\right)+\ln\left(\frac{3/5}{1/2}\right)\right)\approx -0.0204$$
+on their first report (i.e. lose money)!
+
+If agent $b$ were to start then $q^b_1=\frac{1}{4}$, $q^a_1=\frac{2}{5}$, and $q^b_1=\frac{1}{2}$. Hence, agent $b$ will eventually expect to lose money on their first report as well since:
+$$\frac{1}{2}\cdot \left(\ln\left(\frac{1/4}{1/2}\right)+\ln\left(\frac{3/4}{1/2}\right)\right)\approx -0.1438$$
+This is no good! Both agents might refuse to participate if they think there is a chance they lose money a report. We can however bypass this issue if we slightly modify the LMSR, in the manner outlined below.
+
+When an agent submits a report, they no longer agree to pay the reward of only the prediction before them. Rather, they agree to pay the reward of \emph{some} prediction submitted before them. Firstly, this maintains the incentive to submit predictions since an agent expects to make money if the prediction they pay is different from theirs and lose nothing if it is identical. Secondly, this allows agents who change their beliefs to safely \emph{renege} (or withdraw) prior reports. Thus, we can quell agent's fears about retroactively expecting to lose money by announcing their predictions!
