@@ -1,0 +1,69 @@
+---
+title: "Rational Inattention and Prediction Markets"
+author: "~sambex-fadsen"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+If we are designing a prediction market with the intent of agents incorporating each others beliefs into their reports (as they do in Aumann's model of interaction), then we might wonder how to incentivize such behavior. Alternatively, if we have a group of experts who can be negatively influenced by outside information, we might wonder how to prevent the acquisition of extra information. If a scoring rule disincentivizes the acquisition of outside information we call it _robust_. Alternatively, if a scoring rule incentivizes information acquisition we call it _frail_.  Luckily, there is a straight forward way to control whether a LMSR is robust or frail, but before visiting this we will need to briefly discuss _rational inattention_.
+
+Rational inattention models attempt to formalize what economist Herbert A. Simon called 'bounded rationality.' Simon argued that our decision making capabilities are limited by a finite capacity to process information and that "a wealth of information creates a poverty of attention, and a need to allocate that attention efficiently" (1971). By simply assigning a cost to information processing, rational inattention models are able to explain the emergent properties of bounded rationality across a wide range of empirical phenomena. In the words of the rational inattention's pioneer, Christopher Sims, the theory's approach is "to construct optimizing-agent models that are consistent with people not using freely available information" so as to "explain why some freely available information is not used, or imperfectly used" (2010). 
+
+## Mutual Information Costs
+
+Consider an event $S$ which takes on some value $s \in \{s_1,s_2,...s_N\}$. Suppose an agent's beliefs about $S$ assigns probability $\mathbb{P}(S=s_n)$ to each outcome. Additionally suppose the agent can run an experiment $X$ which takes on some value $x \in \{x_1,x_2,...x_M\}$ to gain information about $S$ and revise their probabilities to $\mathbb{P}(S=s_i \ | \ X=x)$. By running the experiment $X$, the agent expects to gain:
+\begin{align*}
+H(S)-H(S \ | X)=\sum_{n} P(S=s_n)\cdot \ln\left(\frac{1}{P(S=s_n)}\right)-\mathbb{E}\left[\sum_{n} P(S=s_n \ | \ X=x)\cdot \ln\left(\frac{1}{P(S=s_n \ | \ X=x)}\right)\right]=I(S;X)
+\end{align*}
+bits of information about $S$. In other words, the amount of information $X$ reveals about $S$ is simply the mutual information between $S$ and $X$. Rational inattention models assign the cost of an agent running such an experiment to be:
+$$c\cdot I(S;X)$$
+,i.e. the cost of running of an experiment is $\$c$ per bit of information that the agent pays attention to.
+
+## Mutual Information Benefits
+
+Continuing the above, suppose our agent is being paid out according to an LMSR for reporting their beliefs and the most recent report made assigns $\mathbb{P}'(S=s_n)$ to each outcome. Then if our agent reports their beliefs without running the experiment $X$, they will expect to make:
+\begin{align*}
+b\cdot KL(\mathbb{P}_S,\mathbb{P}'_S)&= \sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{\mathbb{P}(S=s_n)}{\mathbb{P}'(S=s_n)}\right)
+\\
+&=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}(S=s_n)}\right)
+\\
+&=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-H(S)
+\end{align*}
+However, if our agent runs the experiment and discovers $X=x$ and reports their new probabilities, they will expect to make:
+$$b\cdot KL(\mathbb{P}_{S \ | \ X=x},\mathbb{P}'_S)=\sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x)}{\mathbb{P}'(S=s_n)}\right)$$
+Thus, by running the experiment, on average they will expect to make:
+\begin{align*}
+\mathbb{E}\left[b\cdot KL(\mathbb{P}_{S \ | \ X},\mathbb{P}'_S)\right]&=\sum_{m} \mathbb{P}(X=x_m) \sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x_m)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x_m)}{\mathbb{P}'(S=s_n)}\right)
+\\
+&=\sum_{m}  \sum_{n}b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x_m)}{\mathbb{P}'(S=s_n)}\right)
+\\
+&=\sum_{m}  \sum_{n}b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-\sum_{m}  \sum_{n}b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{1}{\mathbb{P}(S=s_n \ |\ X=x_m)}\right)
+\\
+&=  \sum_{n} \sum_{m} b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-b\cdot H(S \ | \ X)
+\\
+&=\sum_{n}b \cdot \mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-b\cdot H(S \ | \ X)
+\end{align*}
+
+Hence on average, running the expirement will increase the amount the agent expects to make by:
+$$\mathbb{E}\left[b\cdot KL(\mathbb{P}_{S \ | \ X},\mathbb{P}'_S)\right]-b\cdot KL(\mathbb{P}_S,\mathbb{P}'_S)=b\cdot H(S)-b\cdot H(S \ | \ X)=b\cdot I(S;X)$$
+, i.e. they will benefit $\$b$ per bit of information gained from the experiment.
+
+## Cost Benefit Analysis
+When an agent assesses whether or not to run an experiment, they will weigh whether the expected benefits of running the experiment outweigh the expected costs. In other words, they will evaluate whether:
+$$b\cdot I(S;X)-c \cdot I(S;X)=(b-c)\cdot I(S;X) \geq 0$$
+Since $I(S;X) \geq 0$ (as mutual information is always non-negative), this boils down to evaluating whether $b \geq c$. Thus an individual agent will choose to acquire outside information iff the market's award of $\$b$ per bit of information is greater than their personal cost of $\$c$ per bit of information.
+
+Thus if we are running a prediction market with $N$ participants whose information costs are $c_1,c_2,...c_N$, a _robust_ LMSR will set:
+$$b < \min_i c_i$$
+so that all agents are disinectivized from acquiring additional information. 
+
+Similarly, a _frail_ LMSR will set:
+$$b > \max_i c_i$$
+so that all agents are incentivized to acquire additional information.
+
+Naturally, one might wonder how to find the information costs associated with each agent. As suggested in Foley 2012, we can deduce the $c_i$ by running lotteries to find the slope of the agents' logistic quantal response curves. If we assume rationally inattentive behavior, these slopes will directly correspond to the each agent's respective information cost.
