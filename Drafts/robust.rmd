@@ -28,12 +28,10 @@ $$c\cdot I(S;X)$$
 
 Continuing the above, suppose our agent is being paid out according to an LMSR for reporting their beliefs and the most recent report made assigns $\mathbb{P}'(S=s_n)$ to each outcome. Then if our agent reports their beliefs without running the experiment $X$, they will expect to make:
 \begin{align*}
-b\cdot KL(\mathbb{P}_S,\mathbb{P}'_S)&= \sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{\mathbb{P}(S=s_n)}{\mathbb{P}'(S=s_n)}\right)
-\\
-&=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}(S=s_n)}\right)
-\\
-&=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-H(S)
+b\cdot KL(\mathbb{P}_S,\mathbb{P}'_S)&= b\cdot H(\mathbb{P}_S,\mathbb{P}'_S)-b\cdot H(S)
 \end{align*}
+where $H(p,q)$ is the cross entropy of $q$ relative to $p$.
+
 However, if our agent runs the experiment and discovers $X=x$ and reports their new probabilities, they will expect to make:
 $$b\cdot KL(\mathbb{P}_{S \ | \ X=x},\mathbb{P}'_S)=\sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x)}{\mathbb{P}'(S=s_n)}\right)$$
 Thus, by running the experiment, on average they will expect to make:
@@ -47,6 +45,8 @@ Thus, by running the experiment, on average they will expect to make:
 &=  \sum_{n} \sum_{m} b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-b\cdot H(S \ | \ X)
 \\
 &=\sum_{n}b \cdot \mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}'(S=s_n)}\right)-b\cdot H(S \ | \ X)
+\\
+&=b\cdot H(\mathbb{P}_S,\mathbb{P}'_S)-b\cdot H(S \ | \ X)
 \end{align*}
 
 Hence on average, running the expirement will increase the amount the agent expects to make by:

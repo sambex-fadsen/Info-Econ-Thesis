@@ -194,12 +194,9 @@ H(S)-H(S \ | X)=\sum_{n} P(S=s_n)\cdot \ln\left(\frac{1}{P(S=s_n)}\right)-\mathb
 <div id="mutual-information-benefits" class="section level2">
 <h2>Mutual Information Benefits</h2>
 <p>Continuing the above, suppose our agent is being paid out according to an LMSR for reporting their beliefs and the most recent report made assigns <span class="math inline">\(\mathbb{P}&#39;(S=s_n)\)</span> to each outcome. Then if our agent reports their beliefs without running the experiment <span class="math inline">\(X\)</span>, they will expect to make: <span class="math display">\[\begin{align*}
-b\cdot KL(\mathbb{P}_S,\mathbb{P}&#39;_S)&amp;= \sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{\mathbb{P}(S=s_n)}{\mathbb{P}&#39;(S=s_n)}\right)
-\\
-&amp;=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}&#39;(S=s_n)}\right)-\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}(S=s_n)}\right)
-\\
-&amp;=\sum_{n}b\cdot\mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}&#39;(S=s_n)}\right)-H(S)
-\end{align*}\]</span> However, if our agent runs the experiment and discovers <span class="math inline">\(X=x\)</span> and reports their new probabilities, they will expect to make: <span class="math display">\[b\cdot KL(\mathbb{P}_{S \ | \ X=x},\mathbb{P}&#39;_S)=\sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x)}{\mathbb{P}&#39;(S=s_n)}\right)\]</span> Thus, by running the experiment, on average they will expect to make: <span class="math display">\[\begin{align*}
+b\cdot KL(\mathbb{P}_S,\mathbb{P}&#39;_S)&amp;= b\cdot H(\mathbb{P}_S,\mathbb{P}&#39;_S)-b\cdot H(S)
+\end{align*}\]</span> where <span class="math inline">\(H(p,q)\)</span> is the cross entropy of <span class="math inline">\(q\)</span> relative to <span class="math inline">\(p\)</span>.</p>
+<p>However, if our agent runs the experiment and discovers <span class="math inline">\(X=x\)</span> and reports their new probabilities, they will expect to make: <span class="math display">\[b\cdot KL(\mathbb{P}_{S \ | \ X=x},\mathbb{P}&#39;_S)=\sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x)}{\mathbb{P}&#39;(S=s_n)}\right)\]</span> Thus, by running the experiment, on average they will expect to make: <span class="math display">\[\begin{align*}
 \mathbb{E}\left[b\cdot KL(\mathbb{P}_{S \ | \ X},\mathbb{P}&#39;_S)\right]&amp;=\sum_{m} \mathbb{P}(X=x_m) \sum_{n}b \cdot \mathbb{P}(S=s_n \ | \ X=x_m)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x_m)}{\mathbb{P}&#39;(S=s_n)}\right)
 \\
 &amp;=\sum_{m}  \sum_{n}b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{\mathbb{P}(S=s_n \ |\ X=x_m)}{\mathbb{P}&#39;(S=s_n)}\right)
@@ -209,6 +206,8 @@ b\cdot KL(\mathbb{P}_S,\mathbb{P}&#39;_S)&amp;= \sum_{n}b\cdot\mathbb{P}(S=s_n)\
 &amp;=  \sum_{n} \sum_{m} b \cdot \mathbb{P}(S=s_n, X=x_m)\ln\left(\frac{1}{\mathbb{P}&#39;(S=s_n)}\right)-b\cdot H(S \ | \ X)
 \\
 &amp;=\sum_{n}b \cdot \mathbb{P}(S=s_n)\ln\left(\frac{1}{\mathbb{P}&#39;(S=s_n)}\right)-b\cdot H(S \ | \ X)
+\\
+&amp;=b\cdot H(\mathbb{P}_S,\mathbb{P}&#39;_S)-b\cdot H(S \ | \ X)
 \end{align*}\]</span></p>
 <p>Hence on average, running the expirement will increase the amount the agent expects to make by: <span class="math display">\[\mathbb{E}\left[b\cdot KL(\mathbb{P}_{S \ | \ X},\mathbb{P}&#39;_S)\right]-b\cdot KL(\mathbb{P}_S,\mathbb{P}&#39;_S)=b\cdot H(S)-b\cdot H(S \ | \ X)=b\cdot I(S;X)\]</span> , i.e. they will benefit <span class="math inline">\(\$b\)</span> per bit of information gained from the experiment.</p>
 </div>
