@@ -28,6 +28,9 @@ function partition_ALT(list) {
         output.push(temp)
         temp = []
     }
+    if(shuffled.length == 1) {
+        output.push(shuffled)
+    }
     return output
 }
 
