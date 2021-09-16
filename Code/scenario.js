@@ -14,4 +14,22 @@ function partition(list) {
     }
 }
 
-console.log(partition([1,2,3,4,5,6,7,8]))
+function partition_ALT(list) {
+    var shuffled = list.sort((a, b) => 0.5 - Math.random())
+    var output = []
+    var temp = []
+
+    while(shuffled.length > 1) {
+        var numPop = Math.floor(Math.random() * shuffled.length) + 1
+        
+        for(var i = 0; i < numPop; i++) {
+            temp.push(shuffled.pop())
+        }
+        output.push(temp)
+        temp = []
+    }
+    return output
+}
+
+//console.log(partition([1,2,3,4,5,6,7,8]))
+console.log(partition_ALT([1,2,3,4,5,6,7,8]))
