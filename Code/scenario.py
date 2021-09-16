@@ -35,7 +35,7 @@ def unionchnks(part,chnks):
 #and list of opponent's possible chunks
 #Returns posterior of agent
 def posterior(event, chunk, opp_part, opp_chnks):
-	post=len(set(event) & (set(chunk) & set(unionchnks(opp_part, opp_chnks))))/len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))
+	post=len(set(event) & (set(chunk) & set(unionchnks(opp_part, opp_chnks)) ))/len(set(chunk) & set(unionchnks(opp_part, opp_chnks)))
 	return post
 
 #Given posterior, event, info partition, opponent's
