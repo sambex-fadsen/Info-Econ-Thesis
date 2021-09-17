@@ -63,12 +63,13 @@ function pssblchnks(post, event, part, opp_part, opp_chunks, oldpssblchnks){
         var setChunk = new Set(chunk)
         var setOppPartChunk = new Set(unionchunks(opp_part, opp_chunks))
         var intersect = setIntersection(setChunk, setOppPartChunk)
-		var chunk_post = undefined
+	var chunk_post = undefined
         if (intersect.size != 0){
             chunk_post = posterior(event, chunk, opp_part, opp_chunks)
         }
-		if (chunk_post == post){
-			chunks.push(part.indexOf(chunk))
+	
+	if (chunk_post == post){
+	    chunks.push(part.indexOf(chunk))
         }
     }
 	return new Array(setIntersection(new Set(chunks), new Set(oldpssblchnks)))
