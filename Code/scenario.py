@@ -31,7 +31,7 @@ def unionchnks(part,chnks):
 		union+=part[i]
 	return union
 
-#Given event, chunk of agent, opponent's info partition, 
+#Given event, chunk of agent, opponent's info partition,
 #and list of opponent's possible chunks
 #Returns posterior of agent
 def posterior(event, chunk, opp_part, opp_chnks):
@@ -40,7 +40,7 @@ def posterior(event, chunk, opp_part, opp_chnks):
 
 #Given posterior, event, info partition, opponent's
 #info partition, and opponent's possible chunks
-#Returns possible chunks consistent 
+#Returns possible chunks consistent
 #with reported posterior
 def pssblchnks(post, event, part, opp_part, opp_chnks, oldpssblchnks):
 	chnks=[]
@@ -64,11 +64,11 @@ def communicate(world, event, agent_A, agent_B):
 	oldpssblchnks_B=range(len(agent_B))
 	A_report=[]
 	B_report=[]
-	
+
 	posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 	A_report.append(posterior_A)
 	newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B, oldpssblchnks_A)
-	
+
 	posterior_B=posterior(event, chunk_B, agent_A, newpssblchnks_A)
 	B_report.append(posterior_B)
 	newpssblchnks_B=pssblchnks(posterior_B, event, agent_B, agent_A, newpssblchnks_A, oldpssblchnks_B)
@@ -76,7 +76,7 @@ def communicate(world, event, agent_A, agent_B):
 	while (newpssblchnks_A!=oldpssblchnks_A or newpssblchnks_B!=oldpssblchnks_B):
 		oldpssblchnks_A=newpssblchnks_A
 		oldpssblchnks_B=newpssblchnks_B
-	
+
 		posterior_A=posterior(event, chunk_A, agent_B, oldpssblchnks_B)
 		A_report.append(posterior_A)
 		newpssblchnks_A=pssblchnks(posterior_A, event, agent_A, agent_B, oldpssblchnks_B, oldpssblchnks_A)
@@ -111,29 +111,38 @@ def check_rtrctv_rgrt(reports):
 				if (k==0 and j==0):
 					if payoff(reports[j][i], 1/2, reports[j][k])<0:
 						return True
-				elif (j==0): 
+				elif (j==0):
 					if payoff(reports[j][i], reports[j+1][k-1], reports[j][k])<0:
 						return True
 				elif (j==1):
 					if payoff(reports[j][i], reports[j-1][k], reports[j][k])<0:
 						return True
 	return False
-			
+	
+#Generates scenario for game where the true state of
+#the world is some number between 1 and 10 and agents
+#communicate about the odds of true state being a multiple of 3
+def gen_scenario():
+	world=random.randint(1,10)
+	event=[3,6,9]
+	num_turns=0
 
-world=1
-event=[3,6,9]
-num_turns=0
+	while(True):
+		agent_A=partition(list(range(1,11)))
+		agent_B=partition(list(range(1,11)))
+		reports=communicate(world,event,agent_A,agent_B)
+		num_turns=len(reports[0])
+		if check_rtrctv_rgrt(reports)==True:
+			print("Generating scenario")
+			if num_turns>=4:
+				print("Done!")
+				print("\n")
+				print(world)
+				print(agent_A)
+				print(agent_B)
+				print(reports)
+				break
+	return(world, event, agent_A, agent_B)
 
-while(True):
-	agent_A=partition(list(range(1,11)))
-	agent_B=partition(list(range(1,11)))
-	reports=communicate(world,event,agent_A,agent_B)
-	num_turns=len(reports[0])
-	if check_rtrctv_rgrt(reports)==True:
-		print(num_turns)
-		if num_turns>=4:
-			break
 
-print(agent_A)
-print(agent_B)
-print(reports)
+gen_scenario()
