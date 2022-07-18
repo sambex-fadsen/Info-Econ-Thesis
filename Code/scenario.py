@@ -128,12 +128,12 @@ def gen_scenario():
 	num_turns=0
 
 	while(True):
+		print("Generating scenario")
 		agent_A=partition(list(range(1,11)))
 		agent_B=partition(list(range(1,11)))
 		reports=communicate(world,event,agent_A,agent_B)
 		num_turns=len(reports[0])
 		if check_rtrctv_rgrt(reports)==True:
-			print("Generating scenario")
 			if num_turns>=4:
 				print("Done!")
 				print("\n")
